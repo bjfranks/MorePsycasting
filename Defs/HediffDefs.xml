@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+  <HediffDef ParentName = "PsycastHediffBase">
+	<defName>MorePsycasts_StabilizingTouch</defName>
+	<label>stabilized</label>
+	<description>This creature's bleeding is stemmed for the time being. This is achieved by getting the brain to psychically hold back its blood.</description>
+	<isBad>false</isBad>
+	<stages>
+	  <li>
+		<totalBleedFactor>0.0</totalBleedFactor>
+	  </li>
+	</stages>
+  </HediffDef>
+  
+  <HediffDef ParentName = "PsycastHediffBase">
+	<defName>MorePsycasts_AcceleratedHealing</defName>
+	<label>psychically-accelerated healing</label>
+	<description>This creature psyche is being stimulated resulting in it healing at a much faster rate than is natural.</description>
+	<isBad>false</isBad>
+	<stages>
+	  <li>
+		<naturalHealingFactor>2</naturalHealingFactor>
+		<statFactors>
+		  <ImmunityGainSpeedFactor>2</ImmunityGainSpeedFactor>
+		</statFactors>
+	  </li>
+	</stages>
+  </HediffDef>
+  
+  <HediffDef ParentName = "PsycastHediffBase">
+    <defName>MorePsycasts_PsychicReverberationsScars</defName>
+	<hediffClass>HediffWithComps</hediffClass>
+	<label>psychic reverberations</label>
+	<description>This creatures mind is pulsing with psychic energies stimulating scars, healing them over time.</description>
+	<isBad>false</isBad>
+	<comps>
+      <li>
+        <compClass>MorePsycasts.HediffComp_PsychicReverberationsScars</compClass>
+      </li>
+    </comps>
+  </HediffDef>
+  
+  <HediffDef ParentName = "PsycastHediffBase">
+    <defName>MorePsycasts_PsychicReverberationsBodyParts</defName>
+	<hediffClass>HediffWithComps</hediffClass>
+	<label>rapid psychic reverberations</label>
+	<description>This creatures mind is rapidly pulsing with psychic energies stimulating lost body parts, healing them over time and causing tremendous pain.</description>
+	<isBad>false</isBad>
+	<stages>
+	  <li>
+		<painOffset>0.35</painOffset>
+	  </li>
+	</stages>
+	<comps>
+      <li>
+        <compClass>MorePsycasts.HediffComp_PsychicReverberationsBodyParts</compClass>
+      </li>
+    </comps>
+  </HediffDef>
+  
+  <HediffDef>
+    <defName>MorePsycasts_PsychicInducedHunger</defName>
+    <hediffClass>MorePsycasts.HediffStacks</hediffClass>
+	<label>psychically induced hunger and exhaustion</label>
+	<description>This creatures is psychically healing its body using up its bodily nutrients at an increased rate. This causes slight pain. This effect can stack, beware of higher stack amounts, since a pawn might be unable to sleep and eat sufficiently.</description>
+	<initialSeverity>0</initialSeverity>
+    <minSeverity>0</minSeverity>
+	<tendable>False</tendable>
+	<chronic>False</chronic>
+	<everCurableByItem>False</everCurableByItem>
+	<stages>
+	  <li>
+        <hungerRateFactorOffset>1</hungerRateFactorOffset>
+		<restFallFactorOffset>1</restFallFactorOffset>
+		<painOffset>0.05</painOffset>
+      </li>
+	</stages>
+  </HediffDef>
+  
+</Defs>

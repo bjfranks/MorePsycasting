@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <AbilityDef Name="TouchBase" ParentName="PsycastBase" Abstract="True">
+    <jobDef>CastAbilityOnThingMelee</jobDef>
+    <stunTargetWhileCasting>True</stunTargetWhileCasting>
+    <displayGizmoWhileUndrafted>True</displayGizmoWhileUndrafted>
+	<disableGizmoWhileUndrafted>False</disableGizmoWhileUndrafted>
+    <verbProperties>
+      <drawAimPie>False</drawAimPie>
+	  <range>-1</range>
+    </verbProperties>
+  </AbilityDef>
+
+  <AbilityDef ParentName="TouchBase">
+    <defName>MorePsycasts_StabilizingTouch</defName>
+    <label>stabilizing touch</label>
+    <description>Stem the bleeding of a creature for a limited time.</description>
+    <level>1</level>
+    <iconPath>Icons/stabilize</iconPath>
+    <statBases>
+      <Ability_EntropyGain>8</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.01</Ability_PsyfocusCost>
+	  <Ability_Duration>40</Ability_Duration>	  
+    </statBases>
+    <verbProperties>
+      <warmupTime>0.25</warmupTime>
+      <targetParams>
+        <canTargetSelf>True</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>True</canTargetAnimals>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityGiveHediff">
+        <compClass>CompAbilityEffect_GiveHediff</compClass>
+        <hediffDef>MorePsycasts_StabilizingTouch</hediffDef>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+      </li>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffStacks</compClass>
+        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+      </li>
+	  <li Class="CompProperties_AbilityMoteOnTarget">
+        <moteDef>Mote_PsycastPsychicEffect</moteDef>
+      </li>
+    </comps>
+  </AbilityDef>
+
+  <AbilityDef ParentName="TouchBase">
+    <defName>MorePsycasts_HealingTouch</defName>
+    <label>healing touch</label>
+    <description>Double the natural healing process of a creature, while doubling its pain and hunger rate.</description>
+    <level>2</level>
+    <iconPath>Icons/healingtouch</iconPath>
+    <statBases>
+      <Ability_EntropyGain>20</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.1</Ability_PsyfocusCost>
+	  <Ability_Duration>120</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>10</warmupTime>
+      <targetParams>
+        <canTargetSelf>True</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>True</canTargetAnimals>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityGiveHediff">
+        <compClass>CompAbilityEffect_GiveHediff</compClass>
+        <hediffDef>MorePsycasts_AcceleratedHealing</hediffDef>
+		<onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+      </li>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffStacks</compClass>
+        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+      </li>
+	  <li Class="CompProperties_AbilityMoteOnTarget">
+        <moteDef>Mote_PsycastPsychicEffect</moteDef>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="PsycastBase">
+    <defName>MorePsycasts_FlashHeal</defName>
+    <label>flash heal</label>
+    <description>Instantanteously heal some damage to the target creature. This quick regeneration increases the chance for wounds to scar.</description>
+    <level>3</level>
+    <iconPath>Icons/flashheal</iconPath>
+    <statBases>
+      <Ability_EntropyGain>10</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.1</Ability_PsyfocusCost>
+	  <Ability_Duration>10</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>0.25</warmupTime>
+	  <range>29.9</range>
+      <targetParams>
+        <canTargetSelf>True</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>True</canTargetAnimals>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "MorePsycasts.CompProperties_MorePsycasts_FlashHeal">
+		<damageAmount>10</damageAmount>
+		<scarringMultiplier>1.01</scarringMultiplier>
+		<sound>PsycastPsychicEffect</sound>
+      </li>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffStacks</compClass>
+        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+		<stacks>4</stacks>
+      </li>
+	  <li Class="CompProperties_AbilityMoteOnTarget">
+        <moteDef>Mote_PsycastPsychicEffect</moteDef>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="TouchBase">
+    <defName>MorePsycasts_HealScars</defName>
+    <label>heal scars</label>
+    <description>Reverberate psychic energy in the target slowing healing scars. This healing process will increase the pain perception of the target dramatically.</description>
+    <level>4</level>
+    <iconPath>Icons/removescar</iconPath>
+    <statBases>
+      <Ability_EntropyGain>30</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.5</Ability_PsyfocusCost>
+	  <Ability_Duration>960</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>10</warmupTime>
+      <targetParams>
+        <canTargetSelf>True</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>True</canTargetAnimals>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityGiveHediff">
+        <compClass>CompAbilityEffect_GiveHediff</compClass>
+        <hediffDef>MorePsycasts_PsychicReverberationsScars</hediffDef>
+		<onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+      </li>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffStacks</compClass>
+        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+		<stacks>2</stacks>
+      </li>
+	  <li Class="CompProperties_AbilityMoteOnTarget">
+        <moteDef>Mote_PsycastPsychicEffect</moteDef>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="TouchBase">
+    <defName>MorePsycasts_RegrowBodyParts</defName>
+    <label>regrow body parts</label>
+    <description>Reverberate psychic energy in the target slowing regrowing lost body parts. This healing process will cause the target to experience immense pain.</description>
+    <level>5</level>
+    <iconPath>Icons/regrowbodyparts</iconPath>
+    <statBases>
+      <Ability_EntropyGain>80</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.75</Ability_PsyfocusCost>
+	  <Ability_Duration>960</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>10</warmupTime>
+      <targetParams>
+        <canTargetSelf>True</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>True</canTargetAnimals>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityGiveHediff">
+        <compClass>CompAbilityEffect_GiveHediff</compClass>
+        <hediffDef>MorePsycasts_PsychicReverberationsBodyParts</hediffDef>
+		<onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+      </li>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffStacks</compClass>
+        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+		<stacks>3</stacks>
+      </li>
+	  <li Class="CompProperties_AbilityMoteOnTarget">
+        <moteDef>Mote_PsycastPsychicEffect</moteDef>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="TouchBase">
+    <defName>MorePsycasts_RevivingTouch</defName>
+    <label>reviving touch</label>
+    <description>Send tremendous amounts of psychic energy into a dead human bringing them back to life. This process will instantly reform necessary body parts and restart the body of the deceased. Beware, casting this psycast will release a lot of neural heat, requiring most to release their limiters. This may incapactite the caster from psychic shock.</description>
+    <level>6</level>
+    <iconPath>Icons/revive</iconPath>
+    <statBases>
+      <Ability_EntropyGain>1000</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.95</Ability_PsyfocusCost>
+    </statBases>
+    <verbProperties>
+      <warmupTime>100</warmupTime>
+      <targetParams>
+        <canTargetSelf>False</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>False</canTargetAnimals>
+		<canTargetItems>True</canTargetItems>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "MorePsycasts.CompProperties_MorePsycasts_RevivingTouch">
+	    <sound>PsycastPsychicEffect</sound>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+</Defs>

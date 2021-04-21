@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>More Psycasts</name>
+	<author>noodlesking</author>
+    <packageId>noodlesking.MorePsycasts</packageId>
+	<supportedVersions>
+		<li>1.2</li>
+	</supportedVersions>
+	<description>Adds additional psycasts. Primarily these include healing psycasts.</description>
+	<url>https://steamcommunity.com/id/noodlesking/myworkshopfiles/?appid=294100</url>
+</ModMetaData>
