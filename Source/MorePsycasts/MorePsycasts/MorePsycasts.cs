@@ -7,11 +7,14 @@ using Verse.Sound;
 
 namespace MorePsycasts
 {
+	
 	public class HediffStacks : Hediff
 	{
 		public List<HediffStacks> stacksList = new List<HediffStacks>();
 		public int duration = 0;
 		public int stacks = 0;
+		public Hediff link;
+		public bool done = false;
 		public override HediffStage CurStage
 		{
 			get
@@ -30,9 +33,10 @@ namespace MorePsycasts
 		public override void Tick()
         {
 			base.Tick();
-			if (duration == ageTicks)
+			if (!done && (duration <= ageTicks||(link!=null && link.ShouldRemove)))
             {
 				Severity -= stacks;
+				done = true;
 			}
 			for (int i = stacksList.Count - 1; i >= 0; i--)
 			{
@@ -56,28 +60,51 @@ namespace MorePsycasts
 			Severity += addition.stacks;
 			return true;
 		}
+		public override void ExposeData()
+		{
+			base.ExposeData();
+			Scribe_Values.Look(ref stacksList, "MorePsycasts_stacksList");
+			Scribe_Values.Look(ref duration, "MorePsycasts_duration");
+			Scribe_Values.Look(ref stacks, "MorePsycasts_stacks");
+			Scribe_Values.Look(ref link, "MorePsycasts_link");
+			Scribe_Values.Look(ref done, "MorePsycasts_done");
+		}
 	}
-	public class CompProperties_MorePsycasts_AbilityGiveHediffStacks : CompProperties_AbilityGiveHediff
+	public class CompProperties_MorePsycasts_AbilityGiveHediffWithStacks : CompProperties_AbilityGiveHediff
 	{
+		public HediffDef hediffDef2;
 		public int stacks = 1;
 	}
-	public class CompAbilityEffect_MorePsycasts_GiveHediffStacks : CompAbilityEffect_GiveHediff
+	public class CompAbilityEffect_MorePsycasts_GiveHediffWithStacks : CompAbilityEffect_GiveHediff
 	{
-		public new CompProperties_MorePsycasts_AbilityGiveHediffStacks Props => (CompProperties_MorePsycasts_AbilityGiveHediffStacks)props;
+		public new CompProperties_MorePsycasts_AbilityGiveHediffWithStacks Props => (CompProperties_MorePsycasts_AbilityGiveHediffWithStacks)props;
 
 		public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
 		{
 			Pawn target2 = Props.applyToSelf ? parent.pawn : target.Pawn;
-			Hediff hediff = HediffMaker.MakeHediff(Props.hediffDef, target2, Props.onlyBrain ? target2.health.hediffSet.GetBrain() : null);
-			hediff.Severity = Props.stacks;
-			if (!(hediff is HediffStacks))
-				return;
-			((HediffStacks)hediff).stacks = Props.stacks;
-			((HediffStacks)hediff).duration = GetDurationSeconds(target2).SecondsToTicks();
-			target2.health.AddHediff(hediff);
-		}
-	}
+			if (target2 == null){return;}
+			Hediff hediff = Props.hediffDef != null ? HediffMaker.MakeHediff(Props.hediffDef, target2, Props.onlyBrain ? target2.health.hediffSet.GetBrain() : null) : null;
+			if (hediff != null)
+			{
+				HediffComp_Disappears hediffComp_Disappears = hediff.TryGetComp<HediffComp_Disappears>();
+				if (hediffComp_Disappears != null)
+				{
+					hediffComp_Disappears.ticksToDisappear = GetDurationSeconds(target2).SecondsToTicks();
+				}
+				target2.health.AddHediff(hediff);
+			}
 
+			Hediff hediff2 = HediffMaker.MakeHediff(Props.hediffDef2, target2, Props.onlyBrain ? target2.health.hediffSet.GetBrain() : null);
+			hediff2.Severity = Props.stacks;
+			if (!(hediff2 is HediffStacks))
+				return;
+			((HediffStacks)hediff2).stacks = Props.stacks;
+			((HediffStacks)hediff2).duration = GetDurationSeconds(target2).SecondsToTicks();
+			((HediffStacks)hediff2).link = hediff;
+			target2.health.AddHediff(hediff2);
+		}
+
+	}
 	public class CompProperties_MorePsycasts_FlashHeal : CompProperties_AbilityEffect
 	{
 		public CompProperties_MorePsycasts_FlashHeal()
@@ -89,7 +116,6 @@ namespace MorePsycasts
 		public float scarringMultiplier = 1;
 
 	}
-
 	public class CompAbilityEffect_MorePsycasts_FlashHeal : CompAbilityEffect
 	{
 		public new CompProperties_MorePsycasts_FlashHeal Props => (CompProperties_MorePsycasts_FlashHeal)props;
@@ -128,7 +154,6 @@ namespace MorePsycasts
 			return null;
 		}
 	}
-
 	public class CompProperties_MorePsycasts_RevivingTouch : CompProperties_AbilityEffect
 	{
 		public CompProperties_MorePsycasts_RevivingTouch()
@@ -136,41 +161,143 @@ namespace MorePsycasts
 			this.compClass = typeof(CompAbilityEffect_MorePsycasts_RevivingTouch);
 		}
 	}
-
 	public class CompAbilityEffect_MorePsycasts_RevivingTouch : CompAbilityEffect
 	{
 		public new CompProperties_MorePsycasts_RevivingTouch Props => (CompProperties_MorePsycasts_RevivingTouch)props;
 
 		public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
 		{
-			//Props.sound = SoundDefOf.PsycastPsychicEffect;//SoundDefOf.PsycastPsychicPulse;
 			base.Apply(target, dest);
-			if (target.Thing == null) { return; }
-			Pawn innerPawn = ((Corpse)target.Thing).InnerPawn;
-			ResurrectionUtility.ResurrectWithSideEffects(innerPawn);
-			Messages.Message("MessagePawnResurrected".Translate(innerPawn), innerPawn, MessageTypeDefOf.PositiveEvent);
-			//SoundDefOf.PsycastPsychicEffect.PlayOneShot(new TargetInfo(target.Cell, parent.pawn.Map));
+			Hediff psychicBreakdown = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("PsychicBreakdown"), parent.pawn);
+			psychicBreakdown.Severity = 15;
+			parent.pawn.health.AddHediff(psychicBreakdown);
+			if (target.Thing == null||!(target.Thing is Corpse)) { return; }
+			Pawn pawn = ((Corpse)target.Thing).InnerPawn;
+			float x2 = ((pawn.Corpse == null) ? 0f : (pawn.Corpse.GetComp<CompRottable>().RotProgress / 60000f));
+			ResurrectionUtility.Resurrect(pawn);
+			Hediff psychicRessurection = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("MorePsycasts_PsychicRessurection"), pawn);
+			if (!pawn.health.WouldDieAfterAddingHediff(psychicRessurection))
+			{
+				pawn.health.AddHediff(psychicRessurection);
+			}
+			x2 = (x2*0.8f)+0.2f;
+			float toBeDealt = pawn.health.LethalDamageThreshold * x2;
+			for (int i=0; i<toBeDealt;i++)
+            {
+				BodyPartRecord part = pawn.health.hediffSet.GetRandomNotMissingPart(DefDatabase<DamageDef>.GetNamed("Rotting"));
+				Hediff hediff = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("MorePsycasts_PsychicBurn"), pawn, part);
+				hediff.Severity = Rand.Value;
+				//if (!pawn.health.WouldDieAfterAddingHediff(hediff))
+				//{
+					pawn.health.AddHediff(hediff);
+				//}
+			}
+
+			BodyPartRecord brain = pawn.health.hediffSet.GetBrain();
+			if (Rand.Chance(Utilities.DementiaChancePerRotDaysCurve.Evaluate(x2)) && brain != null)
+			{
+				Hediff hediff2 = HediffMaker.MakeHediff(HediffDefOf.Dementia, pawn, brain);
+				if (!pawn.health.WouldDieAfterAddingHediff(hediff2))
+				{
+					pawn.health.AddHediff(hediff2);
+				}
+			}
+			if (Rand.Chance(Utilities.BlindnessChancePerRotDaysCurve.Evaluate(x2)))
+			{
+				foreach (BodyPartRecord item in from x in pawn.health.hediffSet.GetNotMissingParts()
+												where x.def == BodyPartDefOf.Eye
+												select x)
+				{
+					if (!pawn.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(item))
+					{
+						Hediff hediff3 = HediffMaker.MakeHediff(HediffDefOf.Blindness, pawn, item);
+						pawn.health.AddHediff(hediff3);
+					}
+				}
+			}
+			if (brain != null && Rand.Chance(Utilities.ResurrectionPsychosisChancePerRotDaysCurve.Evaluate(x2)))
+			{
+				Hediff hediff4 = HediffMaker.MakeHediff(HediffDefOf.ResurrectionPsychosis, pawn, brain);
+				if (!pawn.health.WouldDieAfterAddingHediff(hediff4))
+				{
+					pawn.health.AddHediff(hediff4);
+				}
+			}
+			if (pawn.Dead)
+			{
+				Log.Error("The pawn has died while being resurrected.");
+				return;
+			}
+			Messages.Message("MessagePawnResurrected".Translate(pawn), pawn, MessageTypeDefOf.PositiveEvent);
 		}
 	}
-
 	public class HediffComp_PsychicReverberationsScars : HediffComp
 	{
 
 		public override void CompPostTick(ref float severityAdjustment)
 		{
 			base.CompPostTick(ref severityAdjustment);
-			Hediff_Injury hediff_Injury = FindPermanentInjury(base.Pawn);
-			if (hediff_Injury == null) { return; }
-			if (Rand.Value<0.001)
-				hediff_Injury.Heal(0.1f);
-		}
+			Hediff_Injury hediff_Injury = Utilities.FindPermanentInjury(base.Pawn);
+			if (hediff_Injury == null)
+			{
+				severityAdjustment = -1;
+			}
 
-		public override void CompExposeData()
+			if (base.Pawn.IsHashIntervalTick(600))
+				hediff_Injury.Heal(Utilities.getHealingAmount(base.Pawn));
+		}
+	}
+	public class HediffComp_PsychicReverberationsBodyParts : HediffComp
+	{
+
+		public override void CompPostTick(ref float severityAdjustment)
 		{
-			base.CompExposeData();
-		}
+			base.CompPostTick(ref severityAdjustment);
+			Hediff hediff_Injury = Utilities.FindHealablePart(base.Pawn);
+			if (hediff_Injury == null) {
+				severityAdjustment = -1;
+				return;
+			}
 
-		private Hediff_Injury FindPermanentInjury(Pawn pawn, IEnumerable<BodyPartRecord> allowedBodyParts = null)
+			float healingAmount = Utilities.getHealingAmount(base.Pawn);
+
+			if (base.Pawn.IsHashIntervalTick(600))
+			{
+				if (hediff_Injury.def.defName == "MorePsycasts_PartiallyGrown")
+					hediff_Injury.Heal(healingAmount);
+				else
+				{
+					if (Rand.Chance(healingAmount))
+                    {
+						base.Pawn.health.hediffSet.hediffs.Remove(hediff_Injury);
+						Hediff hediff = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("MorePsycasts_PartiallyGrown"), base.Pawn, hediff_Injury.Part);
+						hediff.Severity = hediff_Injury.Part.def.GetMaxHealth(base.Pawn) - 1;
+						hediff.TryGetComp<HediffComp_GetsPermanent>().IsPermanent = true;
+						base.Pawn.health.AddHediff(hediff);
+					}
+				}
+			}
+		}
+	}
+	public class Utilities
+    {
+		public static Hediff FindHealablePart(Pawn pawn)
+		{
+			if (!pawn.Dead)
+			{
+				IEnumerable<Hediff_Injury> hediffs = pawn.health.hediffSet.GetHediffs<Hediff_Injury>();
+				Func<Hediff_Injury, bool> predicate = (Hediff_Injury injury) => (injury != null && injury.def.defName == "MorePsycasts_PartiallyGrown");
+				IEnumerable<Hediff_Injury> injuryList = hediffs.Where(predicate);
+				if (injuryList.Count() != 0) return injuryList.ElementAt(Rand.Range(0, injuryList.Count()));
+
+				IEnumerable<Hediff_MissingPart> hediffs2 = pawn.health.hediffSet.GetMissingPartsCommonAncestors();
+				Func<Hediff_MissingPart, bool> predicate2 = (Hediff_MissingPart injury) => (injury != null && !pawn.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(injury.Part));
+				IEnumerable<Hediff_MissingPart> injuryList2 = hediffs2.Where(predicate2);
+				if (injuryList2.Count() != 0) return injuryList2.ElementAt(Rand.Range(0, injuryList2.Count()));
+			}
+			return null;
+		}
+		public static Hediff_Injury FindPermanentInjury(Pawn pawn, IEnumerable<BodyPartRecord> allowedBodyParts = null)
 		{
 			if (!pawn.Dead)
 			{
@@ -182,41 +309,46 @@ namespace MorePsycasts
 			}
 			return null;
 		}
-	}
 
-	public class HediffComp_PsychicReverberationsBodyParts : HediffComp
-	{
-
-		public override void CompPostTick(ref float severityAdjustment)
-		{
-			base.CompPostTick(ref severityAdjustment);
-			Hediff_MissingPart hediff_Injury = FindPermanentInjury(base.Pawn);
-			if (hediff_Injury == null) { return; }
-			if (Rand.Value < (0.00001/(float)hediff_Injury.Part.def.hitPoints))
-            {
-				HealthUtility.CureHediff(hediff_Injury);
-				//Hediff hediff = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("MorePsycasts_Growing"), base.Pawn);
-				//hediff.Severity = 1;
-				//base.Pawn.health.AddHediff(hediff, hediff_Injury.Part);
-			}
-		}
-
-		public override void CompExposeData()
-		{
-			base.CompExposeData();
-		}
-
-		private Hediff_MissingPart FindPermanentInjury(Pawn pawn)
-		{
-			if (!pawn.Dead)
+		public static float getHealingAmount(Pawn pawn)
+        {
+			float num = 8f;
+			if (pawn.GetPosture() != 0)
 			{
-				IEnumerable<Hediff_MissingPart> hediffs = pawn.health.hediffSet.GetMissingPartsCommonAncestors();
-				Func<Hediff_MissingPart, bool> predicate = (Hediff_MissingPart injury) => (!pawn.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(injury.Part));
-				IEnumerable<Hediff_MissingPart> injuryList = hediffs.Where(predicate);
-				if (injuryList.Count() == 0) return null;
-				return injuryList.ElementAt(Rand.Range(0, injuryList.Count()));
+				num += 4f;
+				Building_Bed building_Bed = pawn.CurrentBed();
+				if (building_Bed != null)
+				{
+					num += building_Bed.def.building.bed_healPerDay;
+				}
 			}
-			return null;
+			foreach (Hediff hediff3 in pawn.health.hediffSet.hediffs)
+			{
+				HediffStage curStage = hediff3.CurStage;
+				if (curStage != null && curStage.naturalHealingFactor != -1f)
+				{
+					num *= curStage.naturalHealingFactor;
+				}
+			}
+			return num * pawn.HealthScale * 0.01f;
 		}
+
+		public static SimpleCurve DementiaChancePerRotDaysCurve = new SimpleCurve
+		{
+			new CurvePoint(0.1f, 0.02f),
+			new CurvePoint(5f, 0.8f)
+		};
+
+		public static SimpleCurve BlindnessChancePerRotDaysCurve = new SimpleCurve
+		{
+			new CurvePoint(0.1f, 0.02f),
+			new CurvePoint(5f, 0.8f)
+		};
+
+		public static SimpleCurve ResurrectionPsychosisChancePerRotDaysCurve = new SimpleCurve
+		{
+			new CurvePoint(0.1f, 0.02f),
+			new CurvePoint(5f, 0.8f)
+		};
 	}
 }

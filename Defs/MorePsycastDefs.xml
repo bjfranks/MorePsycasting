@@ -32,16 +32,10 @@
       </targetParams>
     </verbProperties>
     <comps>
-      <li Class = "CompProperties_AbilityGiveHediff">
-        <compClass>CompAbilityEffect_GiveHediff</compClass>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
         <hediffDef>MorePsycasts_StabilizingTouch</hediffDef>
-        <onlyBrain>True</onlyBrain>
-		<durationMultiplier>PsychicSensitivity</durationMultiplier>
-        <psychic>True</psychic>
-      </li>
-	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffStacks">
-        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffStacks</compClass>
-        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+		<hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
         <onlyBrain>True</onlyBrain>
 		<durationMultiplier>PsychicSensitivity</durationMultiplier>
         <psychic>True</psychic>
@@ -55,16 +49,16 @@
   <AbilityDef ParentName="TouchBase">
     <defName>MorePsycasts_HealingTouch</defName>
     <label>healing touch</label>
-    <description>Double the natural healing process of a creature, while doubling its pain and hunger rate.</description>
+    <description>Double the natural healing process of a creature.</description>
     <level>2</level>
     <iconPath>Icons/healingtouch</iconPath>
     <statBases>
-      <Ability_EntropyGain>20</Ability_EntropyGain>
-	  <Ability_PsyfocusCost>0.1</Ability_PsyfocusCost>
-	  <Ability_Duration>120</Ability_Duration>
+      <Ability_EntropyGain>40</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.2</Ability_PsyfocusCost>
+	  <Ability_Duration>240</Ability_Duration>
     </statBases>
     <verbProperties>
-      <warmupTime>10</warmupTime>
+      <warmupTime>5</warmupTime>
       <targetParams>
         <canTargetSelf>True</canTargetSelf>
 		<canTargetMechs>False</canTargetMechs>
@@ -72,16 +66,10 @@
       </targetParams>
     </verbProperties>
     <comps>
-      <li Class = "CompProperties_AbilityGiveHediff">
-        <compClass>CompAbilityEffect_GiveHediff</compClass>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
         <hediffDef>MorePsycasts_AcceleratedHealing</hediffDef>
-		<onlyBrain>True</onlyBrain>
-		<durationMultiplier>PsychicSensitivity</durationMultiplier>
-        <psychic>True</psychic>
-      </li>
-	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffStacks">
-        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffStacks</compClass>
-        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+		<hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
         <onlyBrain>True</onlyBrain>
 		<durationMultiplier>PsychicSensitivity</durationMultiplier>
         <psychic>True</psychic>
@@ -118,9 +106,9 @@
 		<scarringMultiplier>1.01</scarringMultiplier>
 		<sound>PsycastPsychicEffect</sound>
       </li>
-	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffStacks">
-        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffStacks</compClass>
-        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
+        <hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
         <onlyBrain>True</onlyBrain>
 		<durationMultiplier>PsychicSensitivity</durationMultiplier>
         <psychic>True</psychic>
@@ -139,7 +127,7 @@
     <level>4</level>
     <iconPath>Icons/removescar</iconPath>
     <statBases>
-      <Ability_EntropyGain>30</Ability_EntropyGain>
+      <Ability_EntropyGain>60</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.5</Ability_PsyfocusCost>
 	  <Ability_Duration>960</Ability_Duration>
     </statBases>
@@ -152,16 +140,10 @@
       </targetParams>
     </verbProperties>
     <comps>
-      <li Class = "CompProperties_AbilityGiveHediff">
-        <compClass>CompAbilityEffect_GiveHediff</compClass>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
         <hediffDef>MorePsycasts_PsychicReverberationsScars</hediffDef>
-		<onlyBrain>True</onlyBrain>
-		<durationMultiplier>PsychicSensitivity</durationMultiplier>
-        <psychic>True</psychic>
-      </li>
-	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffStacks">
-        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffStacks</compClass>
-        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+		<hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
         <onlyBrain>True</onlyBrain>
 		<durationMultiplier>PsychicSensitivity</durationMultiplier>
         <psychic>True</psychic>
@@ -180,7 +162,7 @@
     <level>5</level>
     <iconPath>Icons/regrowbodyparts</iconPath>
     <statBases>
-      <Ability_EntropyGain>80</Ability_EntropyGain>
+      <Ability_EntropyGain>70</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.75</Ability_PsyfocusCost>
 	  <Ability_Duration>960</Ability_Duration>
     </statBases>
@@ -193,16 +175,10 @@
       </targetParams>
     </verbProperties>
     <comps>
-      <li Class = "CompProperties_AbilityGiveHediff">
-        <compClass>CompAbilityEffect_GiveHediff</compClass>
-        <hediffDef>MorePsycasts_PsychicReverberationsBodyParts</hediffDef>
-		<onlyBrain>True</onlyBrain>
-		<durationMultiplier>PsychicSensitivity</durationMultiplier>
-        <psychic>True</psychic>
-      </li>
-	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffStacks">
-        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffStacks</compClass>
-        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
+		<hediffDef>MorePsycasts_PsychicReverberationsBodyParts</hediffDef>
+        <hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
         <onlyBrain>True</onlyBrain>
 		<durationMultiplier>PsychicSensitivity</durationMultiplier>
         <psychic>True</psychic>
@@ -217,15 +193,15 @@
   <AbilityDef ParentName="TouchBase">
     <defName>MorePsycasts_RevivingTouch</defName>
     <label>reviving touch</label>
-    <description>Send tremendous amounts of psychic energy into a dead human bringing them back to life. This process will instantly reform necessary body parts and restart the body of the deceased. Beware, casting this psycast will release a lot of neural heat, requiring most to release their limiters. This may incapactite the caster from psychic shock.</description>
+    <description>Send tremendous amounts of psychic energy into a dead human bringing them back to life. This process will instantly reform body parts and restart the body of the deceased. Beware, casting this psycast will release a lot of neural heat, requiring most to release their limiters. The caster will be hit by psychic breakdown.</description>
     <level>6</level>
     <iconPath>Icons/revive</iconPath>
     <statBases>
-      <Ability_EntropyGain>1000</Ability_EntropyGain>
+      <Ability_EntropyGain>150</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.95</Ability_PsyfocusCost>
     </statBases>
     <verbProperties>
-      <warmupTime>100</warmupTime>
+      <warmupTime>50</warmupTime>
       <targetParams>
         <canTargetSelf>False</canTargetSelf>
 		<canTargetMechs>False</canTargetMechs>

@@ -31,7 +31,7 @@
     <defName>MorePsycasts_PsychicReverberationsScars</defName>
 	<hediffClass>HediffWithComps</hediffClass>
 	<label>psychic reverberations</label>
-	<description>This creatures mind is pulsing with psychic energies stimulating scars, healing them over time.</description>
+	<description>This creatures mind is pulsing with psychic energies stimulating scars to heal like wounds would.</description>
 	<isBad>false</isBad>
 	<comps>
       <li>
@@ -75,6 +75,126 @@
 		<painOffset>0.05</painOffset>
       </li>
 	</stages>
+  </HediffDef>
+  
+  <HediffDef ParentName="InjuryBase">
+    <defName>MorePsycasts_PartiallyGrown</defName>
+    <label>partially grown</label>
+	<labelNoun>an injury</labelNoun>
+    <description>This part is partially grown and does not fulfill its function fully yet..</description>
+	<comps>
+      <li Class="HediffCompProperties_GetsPermanent">
+        <permanentLabel>partially grown</permanentLabel>
+      </li>
+    </comps>
+    <injuryProps>
+      <averagePainPerSeverityPermanent>0.0</averagePainPerSeverityPermanent>
+      <bleedRate>0.0</bleedRate>
+      <canMerge>false</canMerge>
+      <destroyedLabel>Destroyed</destroyedLabel>
+    </injuryProps>
+  </HediffDef>
+  
+  <HediffDef ParentName="InjuryBase">
+    <defName>MorePsycasts_PsychicBurn</defName>
+    <label>psychic burn</label>
+    <labelNoun>a burn</labelNoun>
+    <description>A burn.</description>
+    <comps>
+      <li Class="HediffCompProperties_TendDuration">
+        <labelTendedWell>bandaged</labelTendedWell>
+        <labelTendedWellInner>tended</labelTendedWellInner>
+        <labelSolidTendedWell>tended</labelSolidTendedWell>
+      </li>
+      <li Class="HediffCompProperties_Infecter">
+        <infectionChance>0.30</infectionChance>
+      </li>
+      <li Class="HediffCompProperties_GetsPermanent">
+        <permanentLabel>burn scar</permanentLabel>
+      </li>
+    </comps>
+    <injuryProps>
+      <painPerSeverity>0.01875</painPerSeverity>
+      <averagePainPerSeverityPermanent>0.00625</averagePainPerSeverityPermanent>
+      <canMerge>true</canMerge>
+      <destroyedLabel>Burned off</destroyedLabel>
+      <destroyedOutLabel>Burned out</destroyedOutLabel>
+    </injuryProps>
+  </HediffDef>
+  
+  <HediffDef ParentName = "DiseaseBase">
+	<defName>MorePsycasts_PsychicRessurection</defName>
+	<hediffClass>HediffWithComps</hediffClass>
+	<label>psychic resurrection</label>
+	<description>This creature is in the process of resurrecting.</description>
+	<makesSickThought>true</makesSickThought>
+    <makesAlert>false</makesAlert>
+    <minSeverity>0</minSeverity>
+    <maxSeverity>1</maxSeverity>
+    <initialSeverity>1</initialSeverity>
+    <tendable>false</tendable>
+	<isBad>true</isBad>
+	<comps>
+      <li Class="HediffCompProperties_SeverityPerDay">
+        <severityPerDay>-0.1</severityPerDay>
+		<showDaysToRecover>true</showDaysToRecover>
+      </li>
+    </comps>
+	<stages>
+      <li>
+        <label>minor</label>
+        <capMods>
+          <li>
+            <capacity>BloodFiltration</capacity>
+            <offset>-0.25</offset>
+          </li>
+          <li>
+            <capacity>Consciousness</capacity>
+            <offset>-0.25</offset>
+          </li>
+        </capMods>
+      </li>
+      <li>
+        <minSeverity>0.5</minSeverity>
+        <label>major</label>
+        <vomitMtbDays>1.5</vomitMtbDays>
+        <painOffset>0.3</painOffset>
+        <capMods>
+          <li>
+            <capacity>BloodFiltration</capacity>
+            <offset>-0.5</offset>
+          </li>
+          <li>
+            <capacity>Consciousness</capacity>
+            <offset>-0.5</offset>
+          </li>
+          <li>
+            <capacity>Manipulation</capacity>
+            <offset>-0.25</offset>
+          </li>
+        </capMods>
+      </li>
+      <li>
+        <minSeverity>0.9</minSeverity>
+        <label>extreme</label>
+        <vomitMtbDays>0.75</vomitMtbDays>
+        <painOffset>0.3</painOffset>
+        <capMods>
+          <li>
+            <capacity>BloodFiltration</capacity>
+            <offset>-0.8</offset>
+          </li>
+          <li>
+            <capacity>Consciousness</capacity>
+            <setMax>0.1</setMax>
+          </li>
+		  <li>
+            <capacity>Manipulation</capacity>
+            <offset>-0.8</offset>
+          </li>
+        </capMods>
+      </li>
+    </stages>
   </HediffDef>
   
 </Defs>
