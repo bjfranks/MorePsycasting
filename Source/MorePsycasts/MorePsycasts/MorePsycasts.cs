@@ -1,13 +1,201 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.Sound;
 
 namespace MorePsycasts
 {
-	
+	public class MorePsycasts_Settings : ModSettings
+	{
+		public Dictionary<string, bool> psycastStates = new Dictionary<string, bool>();
+		public float debuff_hunger = 1;
+		public float debuff_rest = 1;
+		public float debuff_pain = 0.05f;
+
+		public int stabilizing_touch_entropy_gain = 8;
+		public float stabilizing_touch_psyfocus_cost = 0.01f;
+		public int stabilizing_touch_duration = 40;
+		public float stabilizing_touch_bleed_factor = 0;
+
+		public int healing_touch_entropy_gain = 40;
+		public float healing_touch_psyfocus_cost = 0.2f;
+		public int healing_touch_duration = 240;
+		public float healing_touch_natural_healing_factor = 2f;
+		public float healing_touch_immunity_gain_speed_factor = 2f;
+		public override void ExposeData()
+		{
+			base.ExposeData();
+			Scribe_Collections.Look(ref psycastStates, "MorePsycasts_psycastStates", LookMode.Value, LookMode.Value, ref psycastKeys, ref boolValues);
+			Scribe_Values.Look(ref debuff_hunger, "MorePsycasts_debuff_hunger", debuff_hunger);
+			Scribe_Values.Look(ref debuff_rest, "MorePsycasts_debuff_rest", debuff_rest);
+			Scribe_Values.Look(ref debuff_pain, "MorePsycasts_debuff_pain", debuff_pain);
+			Scribe_Values.Look(ref stabilizing_touch_entropy_gain, "MorePsycasts_stabilizing_touch_entropy_gain", stabilizing_touch_entropy_gain);
+			Scribe_Values.Look(ref stabilizing_touch_psyfocus_cost, "MorePsycasts_stabilizing_touch_psyfocus_cost", stabilizing_touch_psyfocus_cost);
+			Scribe_Values.Look(ref stabilizing_touch_duration, "MorePsycasts_stabilizing_touch_duration", stabilizing_touch_duration);
+			Scribe_Values.Look(ref stabilizing_touch_bleed_factor, "MorePsycasts_stabilizing_touch_bleed_factor", stabilizing_touch_bleed_factor);
+			Scribe_Values.Look(ref healing_touch_entropy_gain, "MorePsycasts_healing_touch_entropy_gain", healing_touch_entropy_gain);
+			Scribe_Values.Look(ref healing_touch_psyfocus_cost, "MorePsycasts_healing_touch_psyfocus_cost", healing_touch_psyfocus_cost);
+			Scribe_Values.Look(ref healing_touch_duration, "MorePsycasts_healing_touch_duration", healing_touch_duration);
+			Scribe_Values.Look(ref healing_touch_natural_healing_factor, "MorePsycasts_healing_touch_natural_healing_factor", healing_touch_natural_healing_factor);
+			Scribe_Values.Look(ref healing_touch_immunity_gain_speed_factor, "MorePsycasts_healing_touch_immunity_gain_speed_factor", healing_touch_immunity_gain_speed_factor);
+		}
+
+		private List<string> psycastKeys;
+		private List<bool> boolValues;
+
+		public void DoSettingsWindowContents(Rect inRect)
+		{
+			var keys = psycastStates.Keys.ToList().OrderByDescending(x => x).ToList();
+			Rect baseRect = new Rect(inRect.x, inRect.y, inRect.width, inRect.height);
+			float relative = 0.5f;
+
+
+			Listing_Standard ls = new Listing_Standard();
+
+			ls.Begin(baseRect);
+			ls.GapLine();
+
+			Rect rest = ls.GetRect(500f);
+
+			Rect leftBaseRect = rest.LeftPart(relative).Rounded();
+			Rect settingsRect = new Rect(0f, 0f, 0.9f * leftBaseRect.width, keys.Count * 24);
+			ls.BeginScrollView(leftBaseRect, ref scrollPosition2, ref settingsRect);
+			ls.Label("These settings on the left are currently disabled, due to being unfinished.");
+			ls.GapLine();
+			ls.Label("Psychically induced hunger and exhaustion");
+			TextFieldNumericLabeled(ls, "hunger rate factor offset", ref debuff_hunger);
+			TextFieldNumericLabeled(ls, "rest fall factor offset", ref debuff_rest);
+			TextFieldNumericLabeled(ls, "pain offset", ref debuff_pain);
+			ls.GapLine();
+			ls.Label("Stabilizing touch");
+			TextFieldNumericLabeled(ls, "entropy gain", ref stabilizing_touch_entropy_gain);
+			TextFieldNumericLabeled(ls, "psyfocus cost", ref stabilizing_touch_psyfocus_cost);
+			TextFieldNumericLabeled(ls, "duration", ref stabilizing_touch_duration);
+			TextFieldNumericLabeled(ls, "bleed factor", ref stabilizing_touch_bleed_factor);
+			ls.GapLine();
+			ls.Label("Healing touch");
+			TextFieldNumericLabeled(ls, "entropy gain", ref healing_touch_entropy_gain);
+			TextFieldNumericLabeled(ls, "psyfocus cost", ref healing_touch_psyfocus_cost);
+			TextFieldNumericLabeled(ls, "duration", ref healing_touch_duration);
+			TextFieldNumericLabeled(ls, "natural healing factor", ref healing_touch_natural_healing_factor);
+			TextFieldNumericLabeled(ls, "immunity gain speed factor", ref healing_touch_immunity_gain_speed_factor);
+		ls.GapLine();
+			ls.EndScrollView(ref settingsRect);
+
+			Rect rightBaseRect = rest.RightPart(1f - relative).Rounded();
+			Rect disableRect = new Rect(0f, 0f, 0.9f * rightBaseRect.width, keys.Count * 24);
+			ls.BeginScrollView(rightBaseRect, ref scrollPosition1, ref disableRect);
+			for (int num = keys.Count - 1; num >= 0; num--)
+			{
+				var test = psycastStates[keys[num]];
+				ls.CheckboxLabeled(keys[num], ref test);
+				psycastStates[keys[num]] = test;
+			}
+			ls.EndScrollView(ref disableRect);
+			ls.Gap(500f);
+
+			ls.GapLine();
+			ls.End();
+			base.Write();
+		}
+		private static Vector2 scrollPosition1 = Vector2.zero;
+		private static Vector2 scrollPosition2 = Vector2.zero;
+		private static void TextFieldNumericLabeled(Listing_Standard ls, string label, ref int val)
+		{
+			string s = val.ToString();
+			ls.TextFieldNumericLabeled<int>(label, ref val, ref s);
+		}
+		private static void TextFieldNumericLabeled(Listing_Standard ls, string label, ref float val)
+		{
+			string s = val.ToString();
+			ls.TextFieldNumericLabeled<float>(label, ref val, ref s);
+		}
+
+
+	}
+
+	public class MorePsycasts_Mod : Mod
+	{
+		public static MorePsycasts_Settings settings;
+		public MorePsycasts_Mod(ModContentPack content) : base(content)
+		{
+			settings = GetSettings<MorePsycasts_Settings>();
+		}
+		public override void DoSettingsWindowContents(Rect inRect)
+		{
+			base.DoSettingsWindowContents(inRect);
+			var psycasts = DefDatabase<AbilityDef>.AllDefsListForReading;
+			foreach (var psycast in psycasts)
+			{
+				if (settings.psycastStates == null) settings.psycastStates = new Dictionary<string, bool>();
+				if (!settings.psycastStates.ContainsKey(psycast.defName))
+				{
+					settings.psycastStates[psycast.defName] = true;
+				}
+			}
+			settings.DoSettingsWindowContents(inRect);
+		}
+		public override string SettingsCategory()
+		{
+			return "More Psycasts";
+		}
+
+		public override void WriteSettings()
+		{
+			base.WriteSettings();
+			DefsRemover.DoDefsRemoval();
+		}
+	}
+	[StaticConstructorOnStartup]
+	public static class DefsRemover
+	{
+		static DefsRemover()
+		{
+			DoDefsRemoval();
+		}
+		public static void RemoveDef(AbilityDef def)
+		{
+			try
+			{
+				if (DefDatabase<AbilityDef>.AllDefsListForReading.Contains(def))
+				{
+					DefDatabase<AbilityDef>.AllDefsListForReading.Remove(def);
+				}
+			}
+			catch { };
+		}
+		public static void DoDefsRemoval()
+		{
+			foreach (var psycastState in MorePsycasts_Mod.settings.psycastStates)
+			{
+				if (!psycastState.Value)
+				{
+					var defToRemove = DefDatabase<AbilityDef>.GetNamedSilentFail(psycastState.Key);
+					if (defToRemove != null)
+					{
+						RemoveDef(defToRemove);
+					}
+				}
+			}
+		}
+	}
+	[StaticConstructorOnStartup]
+	static class SettingsImplementerExecutorInAConstructor
+	{
+		static SettingsImplementerExecutorInAConstructor()
+		{
+			AbilityDef stabilizing_touch = DefDatabase<AbilityDef>.GetNamedSilentFail("MorePsycasts_StabilizingTouch");
+			if (stabilizing_touch != null)
+			{//.GetStatFactorFromList(StatDefOf.Ability_EntropyGain)
+				StatUtility.SetStatValueInList(ref stabilizing_touch.statBases, StatDefOf.Ability_EntropyGain, MorePsycasts_Mod.settings.stabilizing_touch_entropy_gain);
+
+			}
+		}
+	}
 	public class HediffStacks : Hediff
 	{
 		public List<HediffStacks> stacksList = new List<HediffStacks>();
@@ -63,10 +251,10 @@ namespace MorePsycasts
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			Scribe_Values.Look(ref stacksList, "MorePsycasts_stacksList");
+			Scribe_Collections.Look(ref stacksList, "MorePsycasts_stacksList", LookMode.Deep);
 			Scribe_Values.Look(ref duration, "MorePsycasts_duration");
 			Scribe_Values.Look(ref stacks, "MorePsycasts_stacks");
-			Scribe_Values.Look(ref link, "MorePsycasts_link");
+			Scribe_Deep.Look(ref link, "MorePsycasts_link");
 			Scribe_Values.Look(ref done, "MorePsycasts_done");
 		}
 	}

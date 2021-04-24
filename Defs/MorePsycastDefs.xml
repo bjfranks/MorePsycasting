@@ -21,7 +21,7 @@
     <statBases>
       <Ability_EntropyGain>8</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.01</Ability_PsyfocusCost>
-	  <Ability_Duration>40</Ability_Duration>	  
+	  <Ability_Duration>40</Ability_Duration>
     </statBases>
     <verbProperties>
       <warmupTime>0.25</warmupTime>
@@ -51,7 +51,7 @@
     <label>healing touch</label>
     <description>Double the natural healing process of a creature.</description>
     <level>2</level>
-    <iconPath>Icons/healingtouch</iconPath>
+    <iconPath>Icons/healing_touch</iconPath>
     <statBases>
       <Ability_EntropyGain>40</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.2</Ability_PsyfocusCost>
@@ -85,7 +85,7 @@
     <label>flash heal</label>
     <description>Instantanteously heal some damage to the target creature. This quick regeneration increases the chance for wounds to scar.</description>
     <level>3</level>
-    <iconPath>Icons/flashheal</iconPath>
+    <iconPath>Icons/flash_heal</iconPath>
     <statBases>
       <Ability_EntropyGain>10</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.1</Ability_PsyfocusCost>
@@ -125,7 +125,7 @@
     <label>heal scars</label>
     <description>Reverberate psychic energy in the target slowing healing scars. This healing process will increase the pain perception of the target dramatically.</description>
     <level>4</level>
-    <iconPath>Icons/removescar</iconPath>
+    <iconPath>Icons/heal_scar</iconPath>
     <statBases>
       <Ability_EntropyGain>60</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.5</Ability_PsyfocusCost>
@@ -160,7 +160,7 @@
     <label>regrow body parts</label>
     <description>Reverberate psychic energy in the target slowing regrowing lost body parts. This healing process will cause the target to experience immense pain.</description>
     <level>5</level>
-    <iconPath>Icons/regrowbodyparts</iconPath>
+    <iconPath>Icons/regrow_bodypart</iconPath>
     <statBases>
       <Ability_EntropyGain>70</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.75</Ability_PsyfocusCost>
@@ -215,5 +215,15 @@
       </li>
     </comps>
   </AbilityDef>
+  
+  <Operation Class="MorePsycasts.PatchOperation_Deactivate">
+    <settings>
+	  <li>MorePsycasts_StabilizingTouch</li>
+	  <li>MorePsycasts_HealingTouch</li>
+    </settings>
+    <active Class="PathOperationRemove">
+	  <xpath>/Defs/AbilityDef[defName="MorePsycasts_StabilizingTouch"]</xpath>
+	</active>
+  </Operation>
   
 </Defs>
