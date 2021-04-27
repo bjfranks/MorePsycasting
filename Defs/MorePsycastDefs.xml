@@ -3,7 +3,6 @@
 
   <AbilityDef Name="TouchBase" ParentName="PsycastBase" Abstract="True">
     <jobDef>CastAbilityOnThingMelee</jobDef>
-    <stunTargetWhileCasting>True</stunTargetWhileCasting>
     <displayGizmoWhileUndrafted>True</displayGizmoWhileUndrafted>
 	<disableGizmoWhileUndrafted>False</disableGizmoWhileUndrafted>
     <verbProperties>
@@ -53,7 +52,7 @@
     <level>2</level>
     <iconPath>Icons/healing_touch</iconPath>
     <statBases>
-      <Ability_EntropyGain>40</Ability_EntropyGain>
+      <Ability_EntropyGain>0</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.2</Ability_PsyfocusCost>
 	  <Ability_Duration>240</Ability_Duration>
     </statBases>
@@ -101,9 +100,8 @@
       </targetParams>
     </verbProperties>
     <comps>
-      <li Class = "MorePsycasts.CompProperties_MorePsycasts_FlashHeal">
-		<damageAmount>10</damageAmount>
-		<scarringMultiplier>1.01</scarringMultiplier>
+      <li Class = "CompProperties_AbilityEffect">
+		<compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_FlashHeal</compClass>
 		<sound>PsycastPsychicEffect</sound>
       </li>
 	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
@@ -127,8 +125,8 @@
     <level>4</level>
     <iconPath>Icons/heal_scar</iconPath>
     <statBases>
-      <Ability_EntropyGain>60</Ability_EntropyGain>
-	  <Ability_PsyfocusCost>0.5</Ability_PsyfocusCost>
+      <Ability_EntropyGain>0</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.6</Ability_PsyfocusCost>
 	  <Ability_Duration>960</Ability_Duration>
     </statBases>
     <verbProperties>
@@ -162,8 +160,8 @@
     <level>5</level>
     <iconPath>Icons/regrow_bodypart</iconPath>
     <statBases>
-      <Ability_EntropyGain>70</Ability_EntropyGain>
-	  <Ability_PsyfocusCost>0.75</Ability_PsyfocusCost>
+      <Ability_EntropyGain>0</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.8</Ability_PsyfocusCost>
 	  <Ability_Duration>960</Ability_Duration>
     </statBases>
     <verbProperties>
@@ -197,7 +195,7 @@
     <level>6</level>
     <iconPath>Icons/revive</iconPath>
     <statBases>
-      <Ability_EntropyGain>150</Ability_EntropyGain>
+      <Ability_EntropyGain>0</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.95</Ability_PsyfocusCost>
     </statBases>
     <verbProperties>
@@ -210,20 +208,10 @@
       </targetParams>
     </verbProperties>
     <comps>
-      <li Class = "MorePsycasts.CompProperties_MorePsycasts_RevivingTouch">
+      <li Class = "CompProperties_AbilityEffect">
+		<compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_RevivingTouch</compClass>
 	    <sound>PsycastPsychicEffect</sound>
       </li>
     </comps>
   </AbilityDef>
-  
-  <Operation Class="MorePsycasts.PatchOperation_Deactivate">
-    <settings>
-	  <li>MorePsycasts_StabilizingTouch</li>
-	  <li>MorePsycasts_HealingTouch</li>
-    </settings>
-    <active Class="PathOperationRemove">
-	  <xpath>/Defs/AbilityDef[defName="MorePsycasts_StabilizingTouch"]</xpath>
-	</active>
-  </Operation>
-  
 </Defs>

@@ -1,47 +1,101 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 using RimWorld;
 using UnityEngine;
 using Verse;
-using Verse.Sound;
 
 namespace MorePsycasts
 {
+	[DefOf]
+	public class PsycastDefOf
+    {
+		public static AbilityDef MorePsycasts_StabilizingTouch;
+		public static AbilityDef MorePsycasts_HealingTouch;
+		public static AbilityDef MorePsycasts_FlashHeal;
+		public static AbilityDef MorePsycasts_HealScars;
+		public static AbilityDef MorePsycasts_RegrowBodyParts;
+		public static AbilityDef MorePsycasts_RevivingTouch;
+	}
+	[DefOf]
+	public class HediffDefOf
+	{
+		public static HediffDef MorePsycasts_PsychicInducedHunger;
+		public static HediffDef MorePsycasts_StabilizingTouch;
+		public static HediffDef MorePsycasts_AcceleratedHealing;
+		public static HediffDef MorePsycasts_PsychicReverberationsScars;
+		public static HediffDef MorePsycasts_PsychicReverberationsBodyParts;
+		public static HediffDef MorePsycasts_PartiallyGrown;
+		public static HediffDef MorePsycasts_PsychicBurn;
+		public static HediffDef MorePsycasts_PsychicRessurection;
+	}
 	public class MorePsycasts_Settings : ModSettings
 	{
 		public Dictionary<string, bool> psycastStates = new Dictionary<string, bool>();
-		public float debuff_hunger = 1;
-		public float debuff_rest = 1;
-		public float debuff_pain = 0.05f;
+		public Dictionary<string, List<float>> psycastStats = new Dictionary<string, List<float>>();
+		public float? debuff_hunger;
+		public float? debuff_rest;
+		public float? debuff_pain;
 
-		public int stabilizing_touch_entropy_gain = 8;
-		public float stabilizing_touch_psyfocus_cost = 0.01f;
-		public int stabilizing_touch_duration = 40;
-		public float stabilizing_touch_bleed_factor = 0;
+		public float? stabilizing_touch_bleed_factor;
+		public float? healing_touch_natural_healing_factor;
+		public float? healing_touch_immunity_gain_speed_factor;
+		public float? psychic_ressurection_severity_per_day;
+		public float? flash_heal_heal_amount = 10f;
+		public float? flash_heal_scar_chance = 1.01f;
+		public float? heal_scars_healing_speed = 1f;
+		public float? regrow_body_parts_healing_speed = 1f;
+		public float? reviving_touch_min_proportial_damage = 0.2f;
+		public float? reviving_touch_max_proportial_damage = 0.8f;
 
-		public int healing_touch_entropy_gain = 40;
-		public float healing_touch_psyfocus_cost = 0.2f;
-		public int healing_touch_duration = 240;
-		public float healing_touch_natural_healing_factor = 2f;
-		public float healing_touch_immunity_gain_speed_factor = 2f;
+		public bool reset = false;
 		public override void ExposeData()
 		{
 			base.ExposeData();
+			Scribe_Values.Look(ref reset, "MorePsycasts_reset");
+			if (reset&&Scribe.mode!=LoadSaveMode.Saving){return;}
 			Scribe_Collections.Look(ref psycastStates, "MorePsycasts_psycastStates", LookMode.Value, LookMode.Value, ref psycastKeys, ref boolValues);
-			Scribe_Values.Look(ref debuff_hunger, "MorePsycasts_debuff_hunger", debuff_hunger);
-			Scribe_Values.Look(ref debuff_rest, "MorePsycasts_debuff_rest", debuff_rest);
-			Scribe_Values.Look(ref debuff_pain, "MorePsycasts_debuff_pain", debuff_pain);
-			Scribe_Values.Look(ref stabilizing_touch_entropy_gain, "MorePsycasts_stabilizing_touch_entropy_gain", stabilizing_touch_entropy_gain);
-			Scribe_Values.Look(ref stabilizing_touch_psyfocus_cost, "MorePsycasts_stabilizing_touch_psyfocus_cost", stabilizing_touch_psyfocus_cost);
-			Scribe_Values.Look(ref stabilizing_touch_duration, "MorePsycasts_stabilizing_touch_duration", stabilizing_touch_duration);
-			Scribe_Values.Look(ref stabilizing_touch_bleed_factor, "MorePsycasts_stabilizing_touch_bleed_factor", stabilizing_touch_bleed_factor);
-			Scribe_Values.Look(ref healing_touch_entropy_gain, "MorePsycasts_healing_touch_entropy_gain", healing_touch_entropy_gain);
-			Scribe_Values.Look(ref healing_touch_psyfocus_cost, "MorePsycasts_healing_touch_psyfocus_cost", healing_touch_psyfocus_cost);
-			Scribe_Values.Look(ref healing_touch_duration, "MorePsycasts_healing_touch_duration", healing_touch_duration);
-			Scribe_Values.Look(ref healing_touch_natural_healing_factor, "MorePsycasts_healing_touch_natural_healing_factor", healing_touch_natural_healing_factor);
-			Scribe_Values.Look(ref healing_touch_immunity_gain_speed_factor, "MorePsycasts_healing_touch_immunity_gain_speed_factor", healing_touch_immunity_gain_speed_factor);
+			List<string> defNames = psycastStats.Keys.ToList();
+			Scribe_Collections.Look(ref defNames, "MorePsycasts_defNames", LookMode.Value);
+			List<float> entropies = psycastStats.Select(d => d.Value[0]).ToList();
+			Scribe_Collections.Look(ref entropies, "MorePsycasts_entropies", LookMode.Value);
+			List<float> psyfocus = psycastStats.Select(d => d.Value[1]).ToList();
+			Scribe_Collections.Look(ref psyfocus, "MorePsycasts_psyfocus", LookMode.Value);
+			List<float> duration = psycastStats.Select(d => d.Value[2]).ToList();
+			Scribe_Collections.Look(ref duration, "MorePsycasts_duration", LookMode.Value);
+			if (defNames != null)
+			{
+				for (int i = 0; i < defNames.Count; i++)
+				{
+					List<float> currentList = new List<float>();
+					currentList.Add(entropies[i]);
+					currentList.Add(psyfocus[i]);
+					currentList.Add(duration[i]);
+					psycastStats[defNames[i]] = currentList;
+
+				}
+			}
+
+			Scribe_Values.Look(ref debuff_hunger, "MorePsycasts_debuff_hunger", null);
+			Scribe_Values.Look(ref debuff_rest, "MorePsycasts_debuff_rest", null);
+			Scribe_Values.Look(ref debuff_pain, "MorePsycasts_debuff_pain", null);
+			Scribe_Values.Look(ref stabilizing_touch_bleed_factor, "MorePsycasts_stabilizing_touch_bleed_factor", null);
+			Scribe_Values.Look(ref healing_touch_natural_healing_factor, "MorePsycasts_healing_touch_natural_healing_factor", null);
+			Scribe_Values.Look(ref healing_touch_immunity_gain_speed_factor, "MorePsycasts_healing_touch_immunity_gain_speed_factor", null);
+			Scribe_Values.Look(ref flash_heal_heal_amount, "MorePsycasts_flash_heal_heal_amount");
+			if (flash_heal_heal_amount is null) flash_heal_heal_amount = 10f;
+			Scribe_Values.Look(ref flash_heal_scar_chance, "MorePsycasts_flash_heal_scar_chance");
+			if (flash_heal_scar_chance is null) flash_heal_scar_chance = 1.01f;
+			Scribe_Values.Look(ref heal_scars_healing_speed, "MorePsycasts_heal_scars_healing_speed");
+			if (heal_scars_healing_speed is null) heal_scars_healing_speed = 1f;
+			Scribe_Values.Look(ref regrow_body_parts_healing_speed, "MorePsycasts_regrow_body_parts_healing_speed");
+			if (regrow_body_parts_healing_speed is null) regrow_body_parts_healing_speed = 1f;
+			Scribe_Values.Look(ref reviving_touch_min_proportial_damage, "MorePsycasts_reviving_touch_min_proportial_damage");
+			if (reviving_touch_min_proportial_damage is null) reviving_touch_min_proportial_damage = 0.2f;
+			Scribe_Values.Look(ref reviving_touch_max_proportial_damage, "MorePsycasts_reviving_touch_max_proportial_damage");
+			if (reviving_touch_max_proportial_damage is null) reviving_touch_max_proportial_damage = 0.8f;
+			Scribe_Values.Look(ref psychic_ressurection_severity_per_day, "MorePsycasts_psychic_ressurection_severity_per_day");
+			if (psychic_ressurection_severity_per_day is null) psychic_ressurection_severity_per_day = 0.1f;
 		}
 
 		private List<string> psycastKeys;
@@ -49,75 +103,97 @@ namespace MorePsycasts
 
 		public void DoSettingsWindowContents(Rect inRect)
 		{
-			var keys = psycastStates.Keys.ToList().OrderByDescending(x => x).ToList();
-			Rect baseRect = new Rect(inRect.x, inRect.y, inRect.width, inRect.height);
-			float relative = 0.5f;
+			var keysStates = psycastStates.Keys.ToList().OrderByDescending(x => x).ToList();
+			var keysStats = psycastStats.Keys.ToList().OrderByDescending(x => x).ToList();
 
+			Rect rect = inRect.TopPart(0.15f);
+			Widgets.DrawLineHorizontal(0f, rect.y, rect.width);
+			Widgets.Label(rect.LeftPart(0.7f), "Most changes here require a restart of the game to take effect.");
+			Widgets.CheckboxLabeled(new Rect(rect.RightPart(0.3f).x, rect.RightPart(0.3f).y, rect.RightPart(0.3f).width, 25f), "Reset", ref reset);
+			Widgets.DrawLineHorizontal(0f, rect.height, rect.width);
+			Rect rect2 = inRect.BottomPart(0.85f);
 
-			Listing_Standard ls = new Listing_Standard();
-
-			ls.Begin(baseRect);
-			ls.GapLine();
-
-			Rect rest = ls.GetRect(500f);
-
-			Rect leftBaseRect = rest.LeftPart(relative).Rounded();
-			Rect settingsRect = new Rect(0f, 0f, 0.9f * leftBaseRect.width, keys.Count * 24);
-			ls.BeginScrollView(leftBaseRect, ref scrollPosition2, ref settingsRect);
-			ls.Label("These settings on the left are currently disabled, due to being unfinished.");
-			ls.GapLine();
-			ls.Label("Psychically induced hunger and exhaustion");
-			TextFieldNumericLabeled(ls, "hunger rate factor offset", ref debuff_hunger);
-			TextFieldNumericLabeled(ls, "rest fall factor offset", ref debuff_rest);
-			TextFieldNumericLabeled(ls, "pain offset", ref debuff_pain);
-			ls.GapLine();
-			ls.Label("Stabilizing touch");
-			TextFieldNumericLabeled(ls, "entropy gain", ref stabilizing_touch_entropy_gain);
-			TextFieldNumericLabeled(ls, "psyfocus cost", ref stabilizing_touch_psyfocus_cost);
-			TextFieldNumericLabeled(ls, "duration", ref stabilizing_touch_duration);
-			TextFieldNumericLabeled(ls, "bleed factor", ref stabilizing_touch_bleed_factor);
-			ls.GapLine();
-			ls.Label("Healing touch");
-			TextFieldNumericLabeled(ls, "entropy gain", ref healing_touch_entropy_gain);
-			TextFieldNumericLabeled(ls, "psyfocus cost", ref healing_touch_psyfocus_cost);
-			TextFieldNumericLabeled(ls, "duration", ref healing_touch_duration);
-			TextFieldNumericLabeled(ls, "natural healing factor", ref healing_touch_natural_healing_factor);
-			TextFieldNumericLabeled(ls, "immunity gain speed factor", ref healing_touch_immunity_gain_speed_factor);
-		ls.GapLine();
-			ls.EndScrollView(ref settingsRect);
-
-			Rect rightBaseRect = rest.RightPart(1f - relative).Rounded();
-			Rect disableRect = new Rect(0f, 0f, 0.9f * rightBaseRect.width, keys.Count * 24);
-			ls.BeginScrollView(rightBaseRect, ref scrollPosition1, ref disableRect);
-			for (int num = keys.Count - 1; num >= 0; num--)
+			Rect rect3 = rect2.LeftHalf();
+			GUI.BeginGroup(rect3, new GUIStyle(GUI.skin.box));
+			Rect rect4 = new Rect(0f, 0f, rect3.width-20f, (keysStats.Count * 4 + 14) * 32 + 1) ;
+			Widgets.BeginScrollView(rect3.AtZero(), ref scrollPosition1, rect4);
+			Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
+			Widgets.Label(getDrawRect(ref rect4), "Psychically induced hunger and exhaustion");
+			debuff_hunger = TextFieldNumericLabeled(ref rect4, "hunger rate factor offset", (float)debuff_hunger);
+			debuff_rest = TextFieldNumericLabeled(ref rect4, "rest fall factor offset", (float)debuff_rest);
+			debuff_pain = TextFieldNumericLabeled(ref rect4, "pain offset", (float)debuff_pain);
+			for (int num = keysStats.Count - 1; num >= 0; num--)
 			{
-				var test = psycastStates[keys[num]];
-				ls.CheckboxLabeled(keys[num], ref test);
-				psycastStates[keys[num]] = test;
+				Widgets.DrawLineHorizontal(0f, rect4.y*32f, rect4.width);
+				Widgets.Label(getDrawRect(ref rect4), keysStats[num]);
+				if (psycastStats.ContainsKey(keysStats[num]))
+				{
+					List<float> currentList = psycastStats[keysStats[num]];
+					psycastStats[keysStats[num]][0] = TextFieldNumericLabeled(ref rect4, "entropy gain", currentList[0]);
+					psycastStats[keysStats[num]][1] = TextFieldNumericLabeled(ref rect4, "psyfocus cost", currentList[1]);
+					psycastStats[keysStats[num]][2] = TextFieldNumericLabeled(ref rect4, "duration", currentList[2]);
+					if (keysStats[num] == PsycastDefOf.MorePsycasts_StabilizingTouch.defName) { stabilizing_touch_bleed_factor = TextFieldNumericLabeled(ref rect4, "bleed factor", (float)stabilizing_touch_bleed_factor); }
+					if (keysStats[num] == PsycastDefOf.MorePsycasts_HealingTouch.defName)
+                    {
+						healing_touch_natural_healing_factor = TextFieldNumericLabeled(ref rect4, "natural healing factor", (float)healing_touch_natural_healing_factor);
+						healing_touch_immunity_gain_speed_factor = TextFieldNumericLabeled(ref rect4, "immunity gain speed factor", (float)healing_touch_immunity_gain_speed_factor);
+					}
+					if (keysStats[num] == PsycastDefOf.MorePsycasts_HealScars.defName) { heal_scars_healing_speed = TextFieldNumericLabeled(ref rect4, "healing speed relative to base speed", (float)heal_scars_healing_speed); }
+					if (keysStats[num] == PsycastDefOf.MorePsycasts_RegrowBodyParts.defName) { regrow_body_parts_healing_speed = TextFieldNumericLabeled(ref rect4, "healing speed relative to base speed", (float)regrow_body_parts_healing_speed); }
+					if (keysStats[num] == PsycastDefOf.MorePsycasts_FlashHeal.defName)
+					{
+						flash_heal_heal_amount = TextFieldNumericLabeled(ref rect4, "heal amount", (float)flash_heal_heal_amount);
+						flash_heal_scar_chance = TextFieldNumericLabeled(ref rect4, "scar chance", (float)flash_heal_scar_chance);
+					}
+					if (keysStats[num] == PsycastDefOf.MorePsycasts_RevivingTouch.defName)
+                    {
+						reviving_touch_min_proportial_damage = TextFieldNumericLabeled(ref rect4, "min proportial damage", (float)reviving_touch_min_proportial_damage);
+						reviving_touch_max_proportial_damage = TextFieldNumericLabeled(ref rect4, "max proportial damage", (float)reviving_touch_max_proportial_damage);
+						psychic_ressurection_severity_per_day = TextFieldNumericLabeled(ref rect4, "severity per day lost on psychic resurrection", (float)psychic_ressurection_severity_per_day);
+					}
+				}
 			}
-			ls.EndScrollView(ref disableRect);
-			ls.Gap(500f);
+			Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
+			Widgets.EndScrollView();
+			GUI.EndGroup();
 
-			ls.GapLine();
-			ls.End();
+			Rect rect5 = rect2.RightHalf();
+			GUI.BeginGroup(rect5, new GUIStyle(GUI.skin.box));
+			Rect rect6 = new Rect(0f, 0f, rect5.width-20f, keysStates.Count * 24);
+			Widgets.BeginScrollView(rect5.AtZero(), ref scrollPosition2, rect6);
+			for (int num = keysStates.Count - 1; num >= 0; num--)
+			{
+				var test = psycastStates[keysStates[num]];
+				Widgets.CheckboxLabeled(getDrawRect(ref rect6), keysStates[num], ref test);
+				psycastStates[keysStates[num]] = test;
+			}
+			Widgets.EndScrollView();
+			GUI.EndGroup();
+
+			x = 0;
 			base.Write();
 		}
 		private static Vector2 scrollPosition1 = Vector2.zero;
 		private static Vector2 scrollPosition2 = Vector2.zero;
-		private static void TextFieldNumericLabeled(Listing_Standard ls, string label, ref int val)
+
+		private static List<string> editables = new List<string>();
+		private static int x = 0;
+		private static float TextFieldNumericLabeled(ref Rect rect, string label, float val)
 		{
-			string s = val.ToString();
-			ls.TextFieldNumericLabeled<int>(label, ref val, ref s);
+			if (editables.Count >= x) editables.Add(null);
+			string s = editables[x];
+			Widgets.TextFieldNumericLabeled<float>(getDrawRect(ref rect), label, ref val, ref s);
+			editables[x++] = s;
+			return val;
 		}
-		private static void TextFieldNumericLabeled(Listing_Standard ls, string label, ref float val)
-		{
-			string s = val.ToString();
-			ls.TextFieldNumericLabeled<float>(label, ref val, ref s);
+
+		private static Rect getDrawRect(ref Rect rect)
+        {
+			return new Rect(0f, 32f * rect.y++, rect.width, 30f);
 		}
 
 
 	}
-
 	public class MorePsycasts_Mod : Mod
 	{
 		public static MorePsycasts_Settings settings;
@@ -137,6 +213,20 @@ namespace MorePsycasts
 					settings.psycastStates[psycast.defName] = true;
 				}
 			}
+			var morePsycasts_psycasts = typeof(PsycastDefOf).GetFields();
+			foreach (var psycast in morePsycasts_psycasts)
+			{
+				if (settings.psycastStats == null) settings.psycastStats = new Dictionary<string, List<float>>();
+				AbilityDef current = DefDatabase<AbilityDef>.GetNamed(psycast.Name);
+				if (!settings.psycastStats.ContainsKey(current.defName))
+				{
+					List<float> currentList = new List<float>();
+					currentList.Add(current.statBases.GetStatValueFromList(StatDefOf.Ability_EntropyGain, 0));
+					currentList.Add(current.statBases.GetStatValueFromList(StatDefOf.Ability_PsyfocusCost, 0));
+					currentList.Add(current.statBases.GetStatValueFromList(StatDefOf.Ability_Duration, 0));
+					settings.psycastStats[current.defName] = currentList;
+				}
+			}
 			settings.DoSettingsWindowContents(inRect);
 		}
 		public override string SettingsCategory()
@@ -151,7 +241,7 @@ namespace MorePsycasts
 		}
 	}
 	[StaticConstructorOnStartup]
-	public static class DefsRemover
+	static class DefsRemover
 	{
 		static DefsRemover()
 		{
@@ -188,13 +278,38 @@ namespace MorePsycasts
 	{
 		static SettingsImplementerExecutorInAConstructor()
 		{
-			AbilityDef stabilizing_touch = DefDatabase<AbilityDef>.GetNamedSilentFail("MorePsycasts_StabilizingTouch");
-			if (stabilizing_touch != null)
-			{//.GetStatFactorFromList(StatDefOf.Ability_EntropyGain)
-				StatUtility.SetStatValueInList(ref stabilizing_touch.statBases, StatDefOf.Ability_EntropyGain, MorePsycasts_Mod.settings.stabilizing_touch_entropy_gain);
-
-			}
+			applyChanges();
 		}
+		public static void applyChanges()
+        {
+			Dictionary<string, List<float>> psycastStats = MorePsycasts_Mod.settings.psycastStats;
+			foreach (string key in psycastStats.Keys)
+			{
+				StatUtility.SetStatValueInList(ref DefDatabase<AbilityDef>.GetNamed(key).statBases, StatDefOf.Ability_EntropyGain, psycastStats[key][0]);
+				StatUtility.SetStatValueInList(ref DefDatabase<AbilityDef>.GetNamed(key).statBases, StatDefOf.Ability_PsyfocusCost, psycastStats[key][1]);
+				StatUtility.SetStatValueInList(ref DefDatabase<AbilityDef>.GetNamed(key).statBases, StatDefOf.Ability_Duration, psycastStats[key][2]);
+			}
+			exchange(ref MorePsycasts_Mod.settings.debuff_hunger, ref HediffDefOf.MorePsycasts_PsychicInducedHunger.stages[0].hungerRateFactorOffset);
+			exchange(ref MorePsycasts_Mod.settings.debuff_rest, ref HediffDefOf.MorePsycasts_PsychicInducedHunger.stages[0].restFallFactorOffset);
+			exchange(ref MorePsycasts_Mod.settings.debuff_pain, ref HediffDefOf.MorePsycasts_PsychicInducedHunger.stages[0].painOffset);
+			exchange(ref MorePsycasts_Mod.settings.stabilizing_touch_bleed_factor, ref HediffDefOf.MorePsycasts_StabilizingTouch.stages[0].totalBleedFactor);
+			exchange(ref MorePsycasts_Mod.settings.healing_touch_natural_healing_factor, ref HediffDefOf.MorePsycasts_AcceleratedHealing.stages[0].naturalHealingFactor);
+			if (MorePsycasts_Mod.settings.healing_touch_immunity_gain_speed_factor is null)
+				MorePsycasts_Mod.settings.healing_touch_immunity_gain_speed_factor = HediffDefOf.MorePsycasts_AcceleratedHealing.stages[0].statFactors.GetStatFactorFromList(StatDefOf.ImmunityGainSpeedFactor);
+			else
+				StatUtility.SetStatValueInList(ref HediffDefOf.MorePsycasts_AcceleratedHealing.stages[0].statFactors, StatDefOf.ImmunityGainSpeedFactor, (float)MorePsycasts_Mod.settings.healing_touch_immunity_gain_speed_factor);
+			if (MorePsycasts_Mod.settings.psychic_ressurection_severity_per_day is null)
+				MorePsycasts_Mod.settings.psychic_ressurection_severity_per_day = -((HediffCompProperties_SeverityPerDay)HediffDefOf.MorePsycasts_PsychicRessurection.comps[0]).severityPerDay;
+			else
+				((HediffCompProperties_SeverityPerDay)HediffDefOf.MorePsycasts_PsychicRessurection.comps[0]).severityPerDay = -(float)MorePsycasts_Mod.settings.psychic_ressurection_severity_per_day;
+		}
+		private static void exchange(ref float? nullable, ref float def)
+        {
+			if (nullable is null)
+				nullable = def;
+			else
+				def = (float)nullable;
+        }
 	}
 	public class HediffStacks : Hediff
 	{
@@ -293,20 +408,9 @@ namespace MorePsycasts
 		}
 
 	}
-	public class CompProperties_MorePsycasts_FlashHeal : CompProperties_AbilityEffect
-	{
-		public CompProperties_MorePsycasts_FlashHeal()
-		{
-			this.compClass = typeof(CompAbilityEffect_MorePsycasts_FlashHeal);
-		}
-
-		public int damageAmount = 0;
-		public float scarringMultiplier = 1;
-
-	}
 	public class CompAbilityEffect_MorePsycasts_FlashHeal : CompAbilityEffect
 	{
-		public new CompProperties_MorePsycasts_FlashHeal Props => (CompProperties_MorePsycasts_FlashHeal)props;
+		public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
 
 		public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
 		{
@@ -314,7 +418,7 @@ namespace MorePsycasts
 			base.Apply(target, dest);
 
 			if (target.Pawn == null) { return; }
-			for (int i = 0; i < 10*this.Props.damageAmount; i++)
+			for (int i = 0; i < 10*MorePsycasts_Mod.settings.flash_heal_heal_amount; i++)
             {
 				Hediff_Injury hediff_Injury = FindInjury(target.Pawn);
 				if (hediff_Injury != null)
@@ -323,7 +427,7 @@ namespace MorePsycasts
 					HediffWithComps hediffWithComps = hediff_Injury as HediffWithComps;
 					if (hediffWithComps != null)
 					{
-						hediffWithComps.TryGetComp<HediffComp_GetsPermanent>().Props.becomePermanentChanceFactor *= this.Props.scarringMultiplier;
+						hediffWithComps.TryGetComp<HediffComp_GetsPermanent>().Props.becomePermanentChanceFactor *= (float)MorePsycasts_Mod.settings.flash_heal_scar_chance;
 					}
 				}
 			}
@@ -342,16 +446,9 @@ namespace MorePsycasts
 			return null;
 		}
 	}
-	public class CompProperties_MorePsycasts_RevivingTouch : CompProperties_AbilityEffect
-	{
-		public CompProperties_MorePsycasts_RevivingTouch()
-		{
-			this.compClass = typeof(CompAbilityEffect_MorePsycasts_RevivingTouch);
-		}
-	}
 	public class CompAbilityEffect_MorePsycasts_RevivingTouch : CompAbilityEffect
 	{
-		public new CompProperties_MorePsycasts_RevivingTouch Props => (CompProperties_MorePsycasts_RevivingTouch)props;
+		public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
 
 		public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
 		{
@@ -368,23 +465,23 @@ namespace MorePsycasts
 			{
 				pawn.health.AddHediff(psychicRessurection);
 			}
-			x2 = (x2*0.8f)+0.2f;
+			x2 = (x2*(float)MorePsycasts_Mod.settings.reviving_touch_max_proportial_damage)+(float)MorePsycasts_Mod.settings.reviving_touch_min_proportial_damage;
 			float toBeDealt = pawn.health.LethalDamageThreshold * x2;
 			for (int i=0; i<toBeDealt;i++)
             {
 				BodyPartRecord part = pawn.health.hediffSet.GetRandomNotMissingPart(DefDatabase<DamageDef>.GetNamed("Rotting"));
 				Hediff hediff = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("MorePsycasts_PsychicBurn"), pawn, part);
 				hediff.Severity = Rand.Value;
-				//if (!pawn.health.WouldDieAfterAddingHediff(hediff))
-				//{
+				if (!pawn.health.WouldDieAfterAddingHediff(hediff))
+				{
 					pawn.health.AddHediff(hediff);
-				//}
+				}
 			}
 
 			BodyPartRecord brain = pawn.health.hediffSet.GetBrain();
 			if (Rand.Chance(Utilities.DementiaChancePerRotDaysCurve.Evaluate(x2)) && brain != null)
 			{
-				Hediff hediff2 = HediffMaker.MakeHediff(HediffDefOf.Dementia, pawn, brain);
+				Hediff hediff2 = HediffMaker.MakeHediff(RimWorld.HediffDefOf.Dementia, pawn, brain);
 				if (!pawn.health.WouldDieAfterAddingHediff(hediff2))
 				{
 					pawn.health.AddHediff(hediff2);
@@ -398,14 +495,14 @@ namespace MorePsycasts
 				{
 					if (!pawn.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(item))
 					{
-						Hediff hediff3 = HediffMaker.MakeHediff(HediffDefOf.Blindness, pawn, item);
+						Hediff hediff3 = HediffMaker.MakeHediff(RimWorld.HediffDefOf.Blindness, pawn, item);
 						pawn.health.AddHediff(hediff3);
 					}
 				}
 			}
 			if (brain != null && Rand.Chance(Utilities.ResurrectionPsychosisChancePerRotDaysCurve.Evaluate(x2)))
 			{
-				Hediff hediff4 = HediffMaker.MakeHediff(HediffDefOf.ResurrectionPsychosis, pawn, brain);
+				Hediff hediff4 = HediffMaker.MakeHediff(RimWorld.HediffDefOf.ResurrectionPsychosis, pawn, brain);
 				if (!pawn.health.WouldDieAfterAddingHediff(hediff4))
 				{
 					pawn.health.AddHediff(hediff4);
@@ -418,6 +515,11 @@ namespace MorePsycasts
 			}
 			Messages.Message("MessagePawnResurrected".Translate(pawn), pawn, MessageTypeDefOf.PositiveEvent);
 		}
+
+		public override bool CanApplyOn(LocalTargetInfo target, LocalTargetInfo dest)
+        {
+			return target.Thing is Corpse;
+        }
 	}
 	public class HediffComp_PsychicReverberationsScars : HediffComp
 	{
@@ -432,7 +534,7 @@ namespace MorePsycasts
 			}
 
 			if (base.Pawn.IsHashIntervalTick(600))
-				hediff_Injury.Heal(Utilities.getHealingAmount(base.Pawn));
+				hediff_Injury.Heal((float)MorePsycasts_Mod.settings.heal_scars_healing_speed*Utilities.getHealingAmount(base.Pawn));
 		}
 	}
 	public class HediffComp_PsychicReverberationsBodyParts : HediffComp
@@ -447,7 +549,7 @@ namespace MorePsycasts
 				return;
 			}
 
-			float healingAmount = Utilities.getHealingAmount(base.Pawn);
+			float healingAmount = (float)MorePsycasts_Mod.settings.regrow_body_parts_healing_speed*Utilities.getHealingAmount(base.Pawn);
 
 			if (base.Pawn.IsHashIntervalTick(600))
 			{
