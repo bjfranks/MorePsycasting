@@ -4,6 +4,8 @@ using System.Linq;
 using RimWorld;
 using UnityEngine;
 using Verse;
+using Verse.AI;
+using Verse.Sound;
 
 namespace MorePsycasts
 {
@@ -16,6 +18,12 @@ namespace MorePsycasts
 		public static AbilityDef MorePsycasts_HealScars;
 		public static AbilityDef MorePsycasts_RegrowBodyParts;
 		public static AbilityDef MorePsycasts_RevivingTouch;
+		public static AbilityDef MorePsycasts_Ignite;
+		public static AbilityDef MorePsycasts_ArcticPinhole;
+		public static AbilityDef MorePsycasts_CleanSkip;
+		public static AbilityDef MorePsycasts_HaulSkip;
+		public static AbilityDef MorePsycasts_Mending;
+		public static AbilityDef MorePsycasts_FertilitySkip;
 	}
 	[DefOf]
 	public class HediffDefOf
@@ -72,7 +80,6 @@ namespace MorePsycasts
 					currentList.Add(psyfocus[i]);
 					currentList.Add(duration[i]);
 					psycastStats[defNames[i]] = currentList;
-
 				}
 			}
 
@@ -115,7 +122,7 @@ namespace MorePsycasts
 
 			Rect rect3 = rect2.LeftHalf();
 			GUI.BeginGroup(rect3, new GUIStyle(GUI.skin.box));
-			Rect rect4 = new Rect(0f, 0f, rect3.width-20f, (keysStats.Count * 4 + 14) * 32 + 1) ;
+			Rect rect4 = new Rect(0f, 0f, rect3.width-20f, (keysStats.Count * 4 + 14) * 32 + 1);
 			Widgets.BeginScrollView(rect3.AtZero(), ref scrollPosition1, rect4);
 			Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
 			Widgets.Label(getDrawRect(ref rect4), "Psychically induced hunger and exhaustion");
@@ -182,7 +189,7 @@ namespace MorePsycasts
 		{
 			if (editables.Count >= x) editables.Add(null);
 			string s = editables[x];
-			Widgets.TextFieldNumericLabeled<float>(getDrawRect(ref rect), label, ref val, ref s);
+			Widgets.TextFieldNumericLabeled<float>(getDrawRect(ref rect), label, ref val, ref s, -1f);
 			editables[x++] = s;
 			return val;
 		}
@@ -423,12 +430,10 @@ namespace MorePsycasts
 				Hediff_Injury hediff_Injury = FindInjury(target.Pawn);
 				if (hediff_Injury != null)
                 {
-					hediff_Injury.Heal(0.1f);
 					HediffWithComps hediffWithComps = hediff_Injury as HediffWithComps;
-					if (hediffWithComps != null)
-					{
-						hediffWithComps.TryGetComp<HediffComp_GetsPermanent>().Props.becomePermanentChanceFactor *= (float)MorePsycasts_Mod.settings.flash_heal_scar_chance;
-					}
+					HediffComp_GetsPermanent getsPermanent = hediffWithComps.TryGetComp<HediffComp_GetsPermanent>();
+					hediff_Injury.Heal(0.1f);
+					getsPermanent.Props.becomePermanentChanceFactor *= (float)MorePsycasts_Mod.settings.flash_heal_scar_chance;
 				}
 			}
 			//SoundDefOf.PsycastPsychicEffect.PlayOneShot(new TargetInfo(target.Cell, parent.pawn.Map));
@@ -437,8 +442,9 @@ namespace MorePsycasts
 		private Hediff_Injury FindInjury(Pawn pawn)
 		{
 			if (!pawn.Dead) {
-				IEnumerable<Hediff_Injury> hediffs = pawn.health.hediffSet.GetHediffs<Hediff_Injury>();
-				Func<Hediff_Injury, bool> predicate = (Hediff_Injury injury) => (injury != null && injury.Visible && injury.def.everCurableByItem && !injury.IsPermanent() && injury.CanHealNaturally());
+				List<Hediff_Injury> hediffs = new List<Hediff_Injury>();
+				pawn.health.hediffSet.GetHediffs<Hediff_Injury>(ref hediffs);
+				Func<Hediff_Injury, bool> predicate = (Hediff_Injury injury) => (injury != null && injury.Visible && injury.def.everCurableByItem && !injury.IsPermanent() && injury.CanHealNaturally() && injury is HediffWithComps && ((HediffWithComps)injury).TryGetComp<HediffComp_GetsPermanent>()!=null);
 				IEnumerable<Hediff_Injury> injuryList = hediffs.Where(predicate);
 				if (injuryList.Count() == 0) return null;
 				return injuryList.ElementAt(Rand.Range(0, injuryList.Count()));
@@ -459,25 +465,14 @@ namespace MorePsycasts
 			if (target.Thing == null||!(target.Thing is Corpse)) { return; }
 			Pawn pawn = ((Corpse)target.Thing).InnerPawn;
 			float x2 = ((pawn.Corpse == null) ? 0f : (pawn.Corpse.GetComp<CompRottable>().RotProgress / 60000f));
+			float daysToDessicated = (pawn.Corpse == null) ? 0f : pawn.Corpse.GetComp<CompRottable>().PropsRot.daysToDessicated;
 			ResurrectionUtility.Resurrect(pawn);
+
 			Hediff psychicRessurection = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("MorePsycasts_PsychicRessurection"), pawn);
 			if (!pawn.health.WouldDieAfterAddingHediff(psychicRessurection))
 			{
 				pawn.health.AddHediff(psychicRessurection);
 			}
-			x2 = (x2*(float)MorePsycasts_Mod.settings.reviving_touch_max_proportial_damage)+(float)MorePsycasts_Mod.settings.reviving_touch_min_proportial_damage;
-			float toBeDealt = pawn.health.LethalDamageThreshold * x2;
-			for (int i=0; i<toBeDealt;i++)
-            {
-				BodyPartRecord part = pawn.health.hediffSet.GetRandomNotMissingPart(DefDatabase<DamageDef>.GetNamed("Rotting"));
-				Hediff hediff = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("MorePsycasts_PsychicBurn"), pawn, part);
-				hediff.Severity = Rand.Value;
-				if (!pawn.health.WouldDieAfterAddingHediff(hediff))
-				{
-					pawn.health.AddHediff(hediff);
-				}
-			}
-
 			BodyPartRecord brain = pawn.health.hediffSet.GetBrain();
 			if (Rand.Chance(Utilities.DementiaChancePerRotDaysCurve.Evaluate(x2)) && brain != null)
 			{
@@ -508,6 +503,29 @@ namespace MorePsycasts
 					pawn.health.AddHediff(hediff4);
 				}
 			}
+
+			if (true)//!ModLister.HasActiveModWithName("Pawns Just Don't Die"))
+			{
+				x2 /= daysToDessicated;
+				IEnumerable<BodyPartRecord> parts1 = pawn.health.hediffSet.GetNotMissingParts();
+				List<BodyPartRecord> parts = parts1.ToList();
+				parts.Shuffle();
+				int current = 0;
+				while (current < parts.Count())
+				{
+					BodyPartRecord part = parts.ElementAt(current++);
+
+					if (part.coverage > 0)
+					{
+						Hediff hediff = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("MorePsycasts_PsychicBurn"), pawn, part);
+						hediff.Severity = Rand.Value*(pawn.health.hediffSet.GetPartHealth(part) * x2 *2);
+						if (!pawn.health.hediffSet.PartIsMissing(part) && !pawn.health.WouldDieAfterAddingHediff(hediff) && (part.def!=BodyPartDefOf.Head || hediff.Severity < pawn.health.hediffSet.GetPartHealth(part)))
+						{
+							pawn.health.AddHediff(hediff);
+						}
+					}
+				}
+			}
 			if (pawn.Dead)
 			{
 				Log.Error("The pawn has died while being resurrected.");
@@ -518,8 +536,194 @@ namespace MorePsycasts
 
 		public override bool CanApplyOn(LocalTargetInfo target, LocalTargetInfo dest)
         {
-			return target.Thing is Corpse;
+			return target.Thing is Corpse corpse && corpse.GetRotStage() != RotStage.Dessicated;
         }
+	}
+	public class CompAbilityEffect_Ignite : CompAbilityEffect
+	{
+		public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
+
+		public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+		{
+			base.Apply(target, dest);
+
+			if (target == null)
+			{
+				Log.Message("Tried to apply ignite to nothing.");
+				return;
+			}
+			FireUtility.TryStartFireIn(target.Cell, parent.pawn.Map, 0.1f);
+		}
+
+		public override bool CanApplyOn(LocalTargetInfo target, LocalTargetInfo dest)
+		{
+			return FireUtility.ChanceToStartFireIn(target.Cell, parent.pawn.Map) > 0f;
+		}
+	}
+	public class CompAbilityEffect_CleanSkip : CompAbilityEffect
+	{
+		public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
+
+		public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+		{
+			base.Apply(target, dest);
+			Map map = parent.pawn.Map;
+			foreach (IntVec3 item in Utilities.AffectedCells(target, map, parent))
+			{
+				List<Thing> thingList = item.GetThingList(map);
+				for (int i = 0; i < thingList.Count; i++)
+				{
+					Filth filth = thingList[i] as Filth;
+					if (filth != null)
+					{
+						filth.Destroy();
+						SoundDefOf.Psycast_Skip_Exit.PlayOneShot(new TargetInfo(item, map));
+						Utilities.SpawnFleck(new LocalTargetInfo(item), FleckDefOf.PsycastSkipInnerExit, map);
+						Utilities.SpawnFleck(new LocalTargetInfo(item), FleckDefOf.PsycastSkipOuterRingExit, map);
+						Utilities.SpawnEffecter(new LocalTargetInfo(item), EffecterDefOf.Skip_Exit, map, 60, parent);
+						//Mote mote = MoteMaker.MakeStaticMote(item.ToVector3Shifted(), map, ThingDefOf.Mote_WaterskipSplashParticles);
+					}
+				}
+			}
+		}
+	}
+	public class CompAbilityEffect_HaulSkip : CompAbilityEffect
+	{
+		public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
+
+		public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+		{
+			base.Apply(target, dest);
+			Map map = parent.pawn.Map;
+			foreach (IntVec3 item in Utilities.AffectedCells(target, map, parent))
+			{
+				List<Thing> thingList = item.GetThingList(map);
+				for (int i = 0; i < thingList.Count; i++)
+				{
+					Thing thing = thingList[i];
+					int max = thing.stackCount;
+                    for (int j = 0; j < max; j++)
+                        if (thing.def.EverHaulable && !thing.IsForbidden(parent.pawn) && HaulAIUtility.PawnCanAutomaticallyHaulFast(parent.pawn, thing, forced: false))
+                        {
+                            IntVec3 foundCell;
+							if (StoreUtility.TryFindBestBetterStoreCellFor(thing, parent.pawn, parent.pawn.Map, StoreUtility.CurrentStoragePriorityOf(thing), parent.pawn.Faction, out foundCell))
+							{
+								//Mote mote = MoteMaker.MakeStaticMote(item.ToVector3Shifted(), map, ThingDefOf.Mote_WaterskipSplashParticles);
+								SoundDefOf.Psycast_Skip_Exit.PlayOneShot(new TargetInfo(item, map));
+								Utilities.SpawnFleck(new LocalTargetInfo(item), FleckDefOf.PsycastSkipInnerExit, map);
+								Utilities.SpawnFleck(new LocalTargetInfo(item), FleckDefOf.PsycastSkipOuterRingExit, map);
+								Utilities.SpawnEffecter(new LocalTargetInfo(item), EffecterDefOf.Skip_Exit, map, 60, parent);
+
+								int count = Verse.GridsUtility.GetItemStackSpaceLeftFor(foundCell, parent.pawn.Map, thing.def);
+								count = Math.Min(count, thing.stackCount);
+								ThingOwner innerContainer = parent.pawn.Map.thingGrid.ThingAt(foundCell, ThingCategory.Building).holdingOwner;
+								Thing resultingThing;
+								Thing thing2 = thing.SplitOff(count);
+								GenDrop.TryDropSpawn(thing2, foundCell, parent.pawn.Map, ThingPlaceMode.Direct, out resultingThing, playDropSound: false);
+								//thing.stackCount -= count;
+								
+								//if (thing.stackCount == 0)
+								//	thing.DeSpawn();
+
+								/*Thing otherThing = parent.pawn.Map.thingGrid.ThingAt(foundCell, thing.def);
+                                if (otherThing != null)
+                                {
+									int count = thing.def.stackLimit;
+                                    count -= otherThing.stackCount;
+									count = Math.Min(count, thing.stackCount);
+                                    otherThing.stackCount += count;
+                                    thing.stackCount -= count;
+									if (thing.stackCount == 0)
+										thing.DeSpawn();
+                                }
+                                else
+                                {
+                                    thing.Position = foundCell;
+                                }*/
+                                //Mote mote2 = MoteMaker.MakeStaticMote(foundCell.ToVector3Shifted(), map, ThingDefOf.Mote_WaterskipSplashParticles);
+								SoundDefOf.Psycast_Skip_Exit.PlayOneShot(new TargetInfo(foundCell, map));
+								Utilities.SpawnFleck(new LocalTargetInfo(foundCell), FleckDefOf.PsycastSkipInnerExit, map);
+								Utilities.SpawnFleck(new LocalTargetInfo(foundCell), FleckDefOf.PsycastSkipOuterRingExit, map);
+								Utilities.SpawnEffecter(new LocalTargetInfo(foundCell), EffecterDefOf.Skip_Exit, map, 60, parent);
+                            }
+                            else
+                                break;
+                        }
+				}
+			}
+
+		}
+	}
+	public class CompAbilityEffect_Mending : CompAbilityEffect
+	{
+		public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
+
+		public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+		{
+			base.Apply(target, dest);
+			Map map = parent.pawn.Map;
+			Thing thing = null;
+			if (target.Thing!=null)
+            {
+				thing = target.Thing;
+			}
+			else
+            {
+				thing = target.Cell.GetThingList(map).RandomElement<Thing>();
+			}
+			int toHeal = Math.Min(thing.MaxHitPoints - thing.HitPoints, 300);
+			float fraction = (float)toHeal / thing.MaxHitPoints;
+			CompQuality quality = thing.TryGetComp<CompQuality>();
+			if (quality != null && quality.Quality > 0 && Rand.Chance(fraction))
+			{
+				quality.SetQuality(quality.Quality - 1, ArtGenerationContext.Colony);
+			}
+			thing.HitPoints += toHeal;
+			SoundDefOf.Psycast_Skip_Exit.PlayOneShot(new TargetInfo(target.Cell, map));
+			Utilities.SpawnFleck(target, FleckDefOf.PsycastSkipInnerExit, map);
+			Utilities.SpawnFleck(target, FleckDefOf.PsycastSkipOuterRingExit, map);
+			Utilities.SpawnEffecter(target, EffecterDefOf.Skip_Exit, map, 60, parent);
+		}
+	}
+	public class CompAbilityEffect_FertilitySkip : CompAbilityEffect
+	{
+		public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
+
+		public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+		{
+			base.Apply(target, dest);
+			Map map = parent.pawn.Map;
+			foreach (IntVec3 location in Utilities.AffectedCells(target, map, parent))
+			{
+				TerrainDef terrain = map.terrainGrid.TerrainAt(location);
+				if (terrain.IsRiver) continue;
+				if (terrain.IsWater)
+				{
+					TerrainDef mud = DefDatabase<TerrainDef>.GetNamed("Mud");
+					if (mud!=null)
+						map.terrainGrid.SetTerrain(location, mud);
+					else
+						map.terrainGrid.SetTerrain(location, TerrainDefOf.Sand);
+				}
+				else
+				{
+					List<TerrainDef> terrains = new List<TerrainDef>();
+					terrains.Add(TerrainDefOf.Gravel);
+					terrains.Add(TerrainDefOf.Soil);
+					foreach (TerrainThreshold t in map.Biome.terrainsByFertility)
+						if (!terrains.Contains(t.terrain))
+							terrains.Add(t.terrain);
+					foreach (TerrainPatchMaker p in map.Biome.terrainPatchMakers)
+						foreach (TerrainThreshold t in p.thresholds)
+							if (!terrains.Contains(t.terrain))
+								terrains.Add(t.terrain);
+					IOrderedEnumerable<TerrainDef> sorted = terrains.FindAll(e => e.fertility > terrain.fertility && e.fertility <= 1).OrderBy(e => e.fertility);
+					if (sorted.Count() == 0) continue;
+					TerrainDef newTerrain = sorted.First();
+					map.terrainGrid.SetTerrain(location, newTerrain);
+				}
+			}
+		}
 	}
 	public class HediffComp_PsychicReverberationsScars : HediffComp
 	{
@@ -569,13 +773,114 @@ namespace MorePsycasts
 			}
 		}
 	}
+	public class CompAbilityEffect_CureDisease : CompAbilityEffect
+	{
+		public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
+
+		public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
+		{
+			Props.sound = SoundDefOf.PsycastPsychicEffect;
+			base.Apply(target, dest);
+
+			if (target.Pawn == null) { return; }
+
+			Hediff HediffWithComps = Utilities.FindDisease(target.Pawn);
+
+			if (HediffWithComps == null) { return; }
+
+			HediffComp_TendDuration tendComp = HediffWithComps.TryGetComp<HediffComp_TendDuration>();
+			BodyPartRecord part = HediffWithComps.Part;
+			if (part == null)
+			{
+				for (int i = 0; i < 50; i++)
+                {
+					part = target.Pawn.health.hediffSet.GetRandomNotMissingPart(DefDatabase<DamageDef>.GetNamed("SurgicalCut"));
+					if (!part.def.IsSolid(null, null))
+					{
+						Hediff hediff = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("MorePsycasts_PsychicBurn"), target.Pawn, part);
+						hediff.Severity = Rand.Value;
+						if (Rand.Value < 0.95)
+							hediff.Tended(1, 2);
+						target.Pawn.health.AddHediff(hediff);
+					}
+				}
+			}
+			else
+			{
+				Hediff hediff = HediffMaker.MakeHediff(DefDatabase<HediffDef>.GetNamed("MorePsycasts_PsychicBurn"), target.Pawn, HediffWithComps.Part);
+				hediff.Severity = 0.5f * Rand.Value * (target.Pawn.health.hediffSet.GetPartHealth(HediffWithComps.Part));
+				target.Pawn.health.AddHediff(hediff);
+			}
+			target.Pawn.health.RemoveHediff(HediffWithComps);
+		}
+	}
+	public class HediffComp_ReverseAging : HediffComp
+	{
+
+		public override void CompPostTick(ref float severityAdjustment)
+		{
+			base.CompPostTick(ref severityAdjustment);
+
+			if (base.Pawn == null) { return; }
+
+			if (base.Pawn.IsHashIntervalTick(GenDate.TicksPerDay)) //once per day
+			{
+				Pawn pawn = base.Pawn;
+
+				int num = (int)(4 * GenDate.TicksPerDay * pawn.ageTracker.AdultAgingMultiplier); //4 days
+				long val = (long)(GenDate.TicksPerYear * pawn.ageTracker.AdultMinAge); //code from Rimworld age reversal
+				int oldAge = pawn.ageTracker.AgeBiologicalYears;
+				pawn.ageTracker.AgeBiologicalTicks = Math.Max(val, pawn.ageTracker.AgeBiologicalTicks - num);
+				int newAge = pawn.ageTracker.AgeBiologicalYears;
+				pawn.ageTracker.ResetAgeReversalDemand(Pawn_AgeTracker.AgeReversalReason.ViaTreatment); //reset age reversal demand
+
+				if (newAge< oldAge) // tries to remove each chronic illness coming from old age
+                {
+					foreach (Hediff hediff in Utilities.AllChronic(base.Pawn))
+					{
+						HediffGiver responsibleHediffGiver = null;
+						foreach (HediffGiverSetDef hediffGiverSet in pawn.RaceProps.hediffGiverSets)
+                        {
+							foreach (HediffGiver hediffGiver in hediffGiverSet.hediffGivers)
+							{
+								if (hediffGiver is HediffGiver_Birthday && hediffGiver.hediff == hediff.def)
+                                {
+									responsibleHediffGiver = hediffGiver;
+									break;
+								}
+                            }
+							if (responsibleHediffGiver != null)
+								break;
+						}
+						HediffGiver_Birthday birthday = (HediffGiver_Birthday)responsibleHediffGiver;
+
+						float chance = 0f;
+						float notHappenedYet = 1f;
+						float sum = 0f;
+						for (int i = 1; i <= oldAge; i++)
+						{
+							notHappenedYet *= 1f - chance;
+							float x = (float)i / pawn.RaceProps.lifeExpectancy;
+							chance = birthday.ageFractionChanceCurve.Evaluate(x);
+							sum += notHappenedYet * chance;
+						}
+						if (sum==0 || Rand.Value < (notHappenedYet * chance) / sum)
+						{
+							base.Pawn.health.RemoveHediff(hediff);
+						}
+					}
+				}
+			}
+		}		
+	}
 	public class Utilities
     {
 		public static Hediff FindHealablePart(Pawn pawn)
 		{
 			if (!pawn.Dead)
 			{
-				IEnumerable<Hediff_Injury> hediffs = pawn.health.hediffSet.GetHediffs<Hediff_Injury>();
+				List<Hediff_Injury> hediffs = new List<Hediff_Injury>();
+				pawn.health.hediffSet.GetHediffs<Hediff_Injury>(ref hediffs);
 				Func<Hediff_Injury, bool> predicate = (Hediff_Injury injury) => (injury != null && injury.def.defName == "MorePsycasts_PartiallyGrown");
 				IEnumerable<Hediff_Injury> injuryList = hediffs.Where(predicate);
 				if (injuryList.Count() != 0) return injuryList.ElementAt(Rand.Range(0, injuryList.Count()));
@@ -591,7 +896,8 @@ namespace MorePsycasts
 		{
 			if (!pawn.Dead)
 			{
-				IEnumerable<Hediff_Injury> hediffs = pawn.health.hediffSet.GetHediffs<Hediff_Injury>();
+				List<Hediff_Injury> hediffs = new List<Hediff_Injury>();
+				pawn.health.hediffSet.GetHediffs<Hediff_Injury>(ref hediffs);
 				Func<Hediff_Injury, bool> predicate = (Hediff_Injury injury) => (injury != null && injury.Visible && injury.def.everCurableByItem && injury.IsPermanent());
 				IEnumerable<Hediff_Injury> injuryList = hediffs.Where(predicate);
 				if (injuryList.Count() == 0) return null;
@@ -599,7 +905,31 @@ namespace MorePsycasts
 			}
 			return null;
 		}
-
+		public static Hediff FindDisease(Pawn pawn)
+		{
+			if (!pawn.Dead)
+			{
+				List<HediffWithComps> hediffs = new List<HediffWithComps>();
+				pawn.health.hediffSet.GetHediffs<HediffWithComps>(ref hediffs);
+				Func<HediffWithComps, bool> predicate = (HediffWithComps injury) => (injury != null && (injury.TryGetComp<HediffComp_Immunizable>() != null ||
+				injury.TryGetComp<HediffComp_TendDuration>() != null && injury.TryGetComp<HediffComp_TendDuration>().TProps.disappearsAtTotalTendQuality>0));
+				IEnumerable<HediffWithComps> injuryList = hediffs.Where(predicate);
+				if (injuryList.Count() != 0) return injuryList.ElementAt(Rand.Range(0, injuryList.Count()));
+			}
+			return null;
+		}
+		public static IEnumerable<HediffWithComps> AllChronic(Pawn pawn)
+		{
+			if (!pawn.Dead)
+			{
+				List<HediffWithComps> hediffs = new List<HediffWithComps>();
+				pawn.health.hediffSet.GetHediffs<HediffWithComps>(ref hediffs);
+				Func<HediffWithComps, bool> predicate = (HediffWithComps injury) => (injury != null && injury.def.chronic);
+				IEnumerable<HediffWithComps> injuryList = hediffs.Where(predicate);
+				return injuryList;
+			}
+			return null;
+		}
 		public static float getHealingAmount(Pawn pawn)
         {
 			float num = 8f;
@@ -640,5 +970,49 @@ namespace MorePsycasts
 			new CurvePoint(0.1f, 0.02f),
 			new CurvePoint(5f, 0.8f)
 		};
+
+		public static IEnumerable<IntVec3> AffectedCells(LocalTargetInfo target, Map map, Ability parent)
+		{
+			if (target.Cell.Filled(parent.pawn.Map))
+			{
+				yield break;
+			}
+			foreach (IntVec3 item in GenRadial.RadialCellsAround(target.Cell, parent.def.EffectRadius, useCenter: true))
+			{
+				if (item.InBounds(map) && GenSight.LineOfSightToEdges(target.Cell, item, map, skipFirstCell: true))
+				{
+					yield return item;
+				}
+			}
+		}
+
+		public static Boolean CheckForMod(String s)
+        {
+			foreach (ModMetaData d in ModsConfig.ActiveModsInLoadOrder)
+			{
+				if (d.PackageId.EqualsIgnoreCase(s))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		public static void SpawnFleck(LocalTargetInfo target, FleckDef def, Map map)
+		{
+			if (target.HasThing)
+			{
+				FleckMaker.AttachedOverlay(target.Thing, def, Vector3.zero, 1f);
+			}
+			else
+			{
+				FleckMaker.Static(target.Cell, map, def, 1f);
+			}
+		}
+		public static void SpawnEffecter(LocalTargetInfo target, EffecterDef def, Map map, int maintainForTicks, Ability parent)
+        {
+			Effecter effecter = null;
+			effecter = ((!target.HasThing) ? def.Spawn(target.Cell, map, 1f) : def.Spawn(target.Thing, map, 1f));
+			parent.AddEffecterToMaintain(effecter, target.Cell, maintainForTicks);
+		}
 	}
 }

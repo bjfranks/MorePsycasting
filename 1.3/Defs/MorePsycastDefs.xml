@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+  <!--Heal Pack 1-->
+
+  <AbilityDef Name="TouchBase" ParentName="PsycastBase" Abstract="True">
+    <jobDef>CastAbilityOnThingMelee</jobDef>
+	<stunTargetWhileCasting>True</stunTargetWhileCasting>
+    <displayGizmoWhileUndrafted>True</displayGizmoWhileUndrafted>
+	<disableGizmoWhileUndrafted>False</disableGizmoWhileUndrafted>
+    <verbProperties>
+      <drawAimPie>False</drawAimPie>
+	  <range>-1</range>
+    </verbProperties>
+  </AbilityDef>
+
+  <AbilityDef ParentName="TouchBase">
+    <defName>MorePsycasts_StabilizingTouch</defName>
+    <label>stabilizing touch</label>
+    <description>Stem the bleeding of a creature for a limited time.</description>
+    <level>1</level>
+    <iconPath>Icons/stabilize</iconPath>
+    <statBases>
+      <Ability_EntropyGain>8</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.01</Ability_PsyfocusCost>
+	  <Ability_Duration>40</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>0.25</warmupTime>
+      <targetParams>
+        <canTargetSelf>True</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>True</canTargetAnimals>
+      </targetParams>
+    </verbProperties>
+    <comps>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
+        <hediffDef>MorePsycasts_StabilizingTouch</hediffDef>
+		<hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+      </li>
+	  <li Class="CompProperties_AbilityFleckOnTarget">
+        <fleckDef>PsycastPsychicEffect</fleckDef>
+      </li>
+    </comps>
+  </AbilityDef>
+
+  <AbilityDef ParentName="TouchBase">
+    <defName>MorePsycasts_HealingTouch</defName>
+    <label>healing touch</label>
+    <description>Double the natural healing process of a creature.</description>
+    <level>2</level>
+    <iconPath>Icons/healing_touch</iconPath>
+    <statBases>
+	  <Ability_PsyfocusCost>0.2</Ability_PsyfocusCost>
+	  <Ability_Duration>240</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>5</warmupTime>
+      <targetParams>
+        <canTargetSelf>True</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>True</canTargetAnimals>
+      </targetParams>
+    </verbProperties>
+    <comps>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
+        <hediffDef>MorePsycasts_AcceleratedHealing</hediffDef>
+		<hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+      </li>
+	  <li Class="CompProperties_AbilityFleckOnTarget">
+        <fleckDef>PsycastPsychicEffect</fleckDef>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="PsycastBase">
+    <defName>MorePsycasts_FlashHeal</defName>
+    <label>flash heal</label>
+    <description>Instantanteously heal some damage to the target creature. This quick regeneration increases the chance for wounds to scar.</description>
+    <level>3</level>
+    <iconPath>Icons/flash_heal</iconPath>
+    <statBases>
+      <Ability_EntropyGain>10</Ability_EntropyGain>
+	  <Ability_PsyfocusCost>0.1</Ability_PsyfocusCost>
+	  <Ability_Duration>10</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>0.25</warmupTime>
+	  <range>29.9</range>
+      <targetParams>
+        <canTargetSelf>True</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>True</canTargetAnimals>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityEffect">
+		<compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_FlashHeal</compClass>
+		<sound>PsycastPsychicEffect</sound>
+      </li>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
+        <hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+		<stacks>4</stacks>
+      </li>
+	  <li Class="CompProperties_AbilityFleckOnTarget">
+        <fleckDef>PsycastPsychicEffect</fleckDef>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="TouchBase">
+    <defName>MorePsycasts_HealScars</defName>
+    <label>heal scars</label>
+    <description>Reverberate psychic energy in the target slowly healing scars. This healing process will increase the pain perception of the target dramatically.</description>
+    <level>4</level>
+    <iconPath>Icons/heal_scar</iconPath>
+    <statBases>
+	  <Ability_PsyfocusCost>0.6</Ability_PsyfocusCost>
+	  <Ability_Duration>960</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>10</warmupTime>
+      <targetParams>
+        <canTargetSelf>True</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>True</canTargetAnimals>
+      </targetParams>
+    </verbProperties>
+    <comps>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
+        <hediffDef>MorePsycasts_PsychicReverberationsScars</hediffDef>
+		<hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+		<stacks>2</stacks>
+      </li>
+	  <li Class="CompProperties_AbilityFleckOnTarget">
+        <fleckDef>PsycastPsychicEffect</fleckDef>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="TouchBase">
+    <defName>MorePsycasts_RegrowBodyParts</defName>
+    <label>regrow body parts</label>
+    <description>Reverberate psychic energy in the target slowly regrowing lost body parts. This healing process will cause the target to experience immense pain.</description>
+    <level>5</level>
+    <iconPath>Icons/regrow_bodypart</iconPath>
+    <statBases>
+	  <Ability_PsyfocusCost>0.8</Ability_PsyfocusCost>
+	  <Ability_Duration>960</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>10</warmupTime>
+      <targetParams>
+        <canTargetSelf>True</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>True</canTargetAnimals>
+      </targetParams>
+    </verbProperties>
+    <comps>
+	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
+        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
+		<hediffDef>MorePsycasts_PsychicReverberationsBodyParts</hediffDef>
+        <hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
+        <onlyBrain>True</onlyBrain>
+		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <psychic>True</psychic>
+		<stacks>3</stacks>
+      </li>
+	  <li Class="CompProperties_AbilityFleckOnTarget">
+        <fleckDef>PsycastPsychicEffect</fleckDef>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="TouchBase">
+    <defName>MorePsycasts_RevivingTouch</defName>
+    <label>reviving touch</label>
+    <description>Send tremendous amounts of psychic energy into a dead pawn bringing them back to life. This process will instantly reform body parts and restart the body of the deceased. Beware, casting this psycast will release a lot of neural heat, requiring most to release their limiters. The caster will be hit by psychic breakdown.</description>
+    <level>6</level>
+    <iconPath>Icons/revive</iconPath>
+    <statBases>
+	  <Ability_PsyfocusCost>0.95</Ability_PsyfocusCost>
+    </statBases>
+    <verbProperties>
+      <warmupTime>50</warmupTime>
+      <targetParams>
+        <canTargetSelf>False</canTargetSelf>
+		<canTargetMechs>False</canTargetMechs>
+        <canTargetAnimals>False</canTargetAnimals>
+		<canTargetItems>True</canTargetItems>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityEffect">
+		<compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_RevivingTouch</compClass>
+	    <sound>PsycastPsychicEffect</sound>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <!--Utility Pack 1-->
+  
+  <AbilityDef ParentName="PsycastBaseSkip">
+    <defName>MorePsycasts_Ignite</defName>
+    <label>ignite</label>
+    <description>Teleport a piece of a nearby star into a location setting it on fire.</description>
+    <level>1</level>
+    <iconPath>Icons/ignite</iconPath>
+    <statBases>
+      <Ability_PsyfocusCost>0.05</Ability_PsyfocusCost>
+    </statBases>
+    <verbProperties>
+      <warmupTime>2</warmupTime>
+      <range>9.9</range>
+      <targetParams>
+        <canTargetSelf>False</canTargetSelf>
+        <canTargetAnimals>False</canTargetAnimals>
+        <canTargetItems>True</canTargetItems>
+		<canTargetLocations>True</canTargetLocations>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityEffect">
+		<compClass>MorePsycasts.CompAbilityEffect_Ignite</compClass>
+	    <sound>PsycastPsychicEffect</sound>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="PsycastBaseSkip">
+    <defName>MorePsycasts_ArcticPinhole</defName>
+    <label>arctic pinhole</label>
+    <description>Generate a skipgate linked to a permanently illuminated arctic region. The gate absorbs heat in the surrounding area and provides light. The light is enough to work by, but not enough to grow plants.</description>
+    <level>2</level>
+    <iconPath>Icons/arctic_pinhole</iconPath>
+    <canUseAoeToGetTargets>False</canUseAoeToGetTargets>
+    <statBases>
+      <Ability_PsyfocusCost>0.1</Ability_PsyfocusCost>
+      <Ability_EffectRadius>14.9</Ability_EffectRadius>
+      <Ability_Duration>5000</Ability_Duration>
+    </statBases>
+    <verbProperties>
+      <warmupTime>0.2</warmupTime>
+      <range>24.9</range>
+      <targetParams>
+        <canTargetPawns>False</canTargetPawns>
+        <canTargetLocations>True</canTargetLocations>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class="CompProperties_AbilitySpawn">
+        <thingDef>MorePsycasts_ArcticPinhole</thingDef>
+        <allowOnBuildings>False</allowOnBuildings>
+      </li>
+      <li Class="CompProperties_AbilityEffecterOnTarget">
+        <effecterDef>Skip_Exit</effecterDef>
+        <maintainForTicks>60</maintainForTicks>
+        <scale>0.42</scale>
+      </li>
+      <li Class="CompProperties_AbilityFleckOnTarget">
+        <fleckDefs>
+          <li>PsycastSkipInnerExit</li>
+          <li>PsycastSkipOuterRingExit</li>
+        </fleckDefs>
+        <scale>0.42</scale>
+        <sound>Psycast_Skip_Exit</sound>
+        <preCastTicks>5</preCastTicks>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="PsycastBaseSkip">
+    <defName>MorePsycasts_CleanSkip</defName>
+    <label>clean skip</label>
+    <description>Teleports all filth in the selected area into the core of a nearby star, destroying it.</description>
+    <level>3</level>
+    <iconPath>Icons/skip_clean</iconPath>
+	<canUseAoeToGetTargets>False</canUseAoeToGetTargets>
+    <statBases>
+      <Ability_PsyfocusCost>0.1</Ability_PsyfocusCost>
+	  <Ability_EffectRadius>14.9</Ability_EffectRadius>
+    </statBases>
+    <verbProperties>
+      <warmupTime>2</warmupTime>
+      <range>24.9</range>
+      <targetParams>
+        <canTargetPawns>False</canTargetPawns>
+		<canTargetLocations>True</canTargetLocations>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityEffect">
+		<compClass>MorePsycasts.CompAbilityEffect_CleanSkip</compClass>
+	    <sound>PsycastPsychicEffect</sound>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="PsycastBaseSkip">
+    <defName>MorePsycasts_HaulSkip</defName>
+    <label>haul skip</label>
+    <description>Teleports all haulables in the selected area to adequate stockpiles, if they exist.</description>
+    <level>4</level>
+    <iconPath>Icons/skip_haul</iconPath>
+	<canUseAoeToGetTargets>False</canUseAoeToGetTargets>
+    <statBases>
+      <Ability_PsyfocusCost>0.2</Ability_PsyfocusCost>
+	  <Ability_EffectRadius>4.9</Ability_EffectRadius>
+    </statBases>
+    <verbProperties>
+      <warmupTime>2</warmupTime>
+      <range>4.9</range>
+      <targetParams>
+        <canTargetPawns>False</canTargetPawns>
+		<canTargetLocations>True</canTargetLocations>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityEffect">
+		<compClass>MorePsycasts.CompAbilityEffect_HaulSkip</compClass>
+	    <sound>PsycastPsychicEffect</sound>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="PsycastBaseSkip">
+    <defName>MorePsycasts_Mending</defName>
+    <label>mending</label>
+    <description>Skips broken down or used up materials into each other fusing them and repairing the item in the process. This procedure has a chance of lowering the quality of the mended item.</description>
+    <level>5</level>
+    <iconPath>Icons/mending</iconPath>
+    <statBases>
+      <Ability_PsyfocusCost>0.5</Ability_PsyfocusCost>
+    </statBases>
+    <verbProperties>
+      <warmupTime>5</warmupTime>
+      <range>14.9</range>
+      <targetParams>
+        <canTargetPawns>False</canTargetPawns>
+		<canTargetItems>True</canTargetItems>
+		<canTargetBuildings>True</canTargetBuildings>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityEffect">
+		<compClass>MorePsycasts.CompAbilityEffect_Mending</compClass>
+	    <sound>PsycastPsychicEffect</sound>
+      </li>
+    </comps>
+  </AbilityDef>
+  
+  <AbilityDef ParentName="PsycastBaseSkip">
+    <defName>MorePsycasts_FertilitySkip</defName>
+    <label>fertility skip</label>
+    <description>By using skipping to either remove or add components from soil, the soils fertility is increased. The precision of this psycast does not allow for the generation of rich soil.</description>
+    <level>6</level>
+    <iconPath>Icons/skip_fertile</iconPath>
+	<canUseAoeToGetTargets>False</canUseAoeToGetTargets>
+    <statBases>
+      <Ability_PsyfocusCost>0.8</Ability_PsyfocusCost>
+	  <Ability_EffectRadius>1.9</Ability_EffectRadius>
+    </statBases>
+    <verbProperties>
+      <warmupTime>10</warmupTime>
+      <range>14.9</range>
+      <targetParams>
+        <canTargetPawns>False</canTargetPawns>
+		<canTargetLocations>True</canTargetLocations>
+      </targetParams>
+    </verbProperties>
+    <comps>
+      <li Class = "CompProperties_AbilityEffect">
+		<compClass>MorePsycasts.CompAbilityEffect_FertilitySkip</compClass>
+	    <sound>PsycastPsychicEffect</sound>
+      </li>
+    </comps>
+  </AbilityDef>
+</Defs>
