@@ -115,7 +115,7 @@ namespace MorePsycasts
 
 			Rect rect = inRect.TopPart(0.15f);
 			Widgets.DrawLineHorizontal(0f, rect.y, rect.width);
-			Widgets.Label(rect.LeftPart(0.7f), "Most changes here require a restart of the game to take effect.");
+			Widgets.Label(rect.LeftPart(0.7f), "MostChangesRequireRestart".Translate());
 			Widgets.CheckboxLabeled(new Rect(rect.RightPart(0.3f).x, rect.RightPart(0.3f).y, rect.RightPart(0.3f).width, 25f), "Reset", ref reset);
 			Widgets.DrawLineHorizontal(0f, rect.height, rect.width);
 			Rect rect2 = inRect.BottomPart(0.85f);
@@ -125,7 +125,7 @@ namespace MorePsycasts
 			Rect rect4 = new Rect(0f, 0f, rect3.width-20f, (keysStats.Count * 4 + 14) * 32 + 1);
 			Widgets.BeginScrollView(rect3.AtZero(), ref scrollPosition1, rect4);
 			Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
-			Widgets.Label(getDrawRect(ref rect4), "Psychically induced hunger and exhaustion");
+			Widgets.Label(getDrawRect(ref rect4), "PsychicallyInducedHunger".Translate());
 			debuff_hunger = TextFieldNumericLabeled(ref rect4, "hunger rate factor offset", (float)debuff_hunger);
 			debuff_rest = TextFieldNumericLabeled(ref rect4, "rest fall factor offset", (float)debuff_rest);
 			debuff_pain = TextFieldNumericLabeled(ref rect4, "pain offset", (float)debuff_pain);
