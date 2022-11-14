@@ -115,7 +115,7 @@ namespace MorePsycasts
 
 			Rect rect = inRect.TopPart(0.15f);
 			Widgets.DrawLineHorizontal(0f, rect.y, rect.width);
-			Widgets.Label(rect.LeftPart(0.7f), "MostChangesRequireRestart".Translate());
+			Widgets.Label(rect.LeftPart(0.7f), "MorePsycasts_MostChangesRequireRestart".Translate());
 			Widgets.CheckboxLabeled(new Rect(rect.RightPart(0.3f).x, rect.RightPart(0.3f).y, rect.RightPart(0.3f).width, 25f), "Reset", ref reset);
 			Widgets.DrawLineHorizontal(0f, rect.height, rect.width);
 			Rect rect2 = inRect.BottomPart(0.85f);
@@ -125,10 +125,10 @@ namespace MorePsycasts
 			Rect rect4 = new Rect(0f, 0f, rect3.width-20f, (keysStats.Count * 4 + 14) * 32 + 1);
 			Widgets.BeginScrollView(rect3.AtZero(), ref scrollPosition1, rect4);
 			Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
-			Widgets.Label(getDrawRect(ref rect4), "PsychicallyInducedHunger".Translate());
-			debuff_hunger = TextFieldNumericLabeled(ref rect4, "hunger rate factor offset", (float)debuff_hunger);
-			debuff_rest = TextFieldNumericLabeled(ref rect4, "rest fall factor offset", (float)debuff_rest);
-			debuff_pain = TextFieldNumericLabeled(ref rect4, "pain offset", (float)debuff_pain);
+			Widgets.Label(getDrawRect(ref rect4), "MorePsycasts_PsychicallyInducedHunger".Translate());
+			debuff_hunger = TextFieldNumericLabeled(ref rect4, "MorePsycasts_HungerRate".Translate(), (float)debuff_hunger);
+			debuff_rest = TextFieldNumericLabeled(ref rect4, "MorePsycasts_RestFall".Translate(), (float)debuff_rest);
+			debuff_pain = TextFieldNumericLabeled(ref rect4, "MorePsycasts_PainOffset".Translate(), (float)debuff_pain);
 			for (int num = keysStats.Count - 1; num >= 0; num--)
 			{
 				Widgets.DrawLineHorizontal(0f, rect4.y*32f, rect4.width);
@@ -136,27 +136,27 @@ namespace MorePsycasts
 				if (psycastStats.ContainsKey(keysStats[num]))
 				{
 					List<float> currentList = psycastStats[keysStats[num]];
-					psycastStats[keysStats[num]][0] = TextFieldNumericLabeled(ref rect4, "entropy gain", currentList[0]);
-					psycastStats[keysStats[num]][1] = TextFieldNumericLabeled(ref rect4, "psyfocus cost", currentList[1]);
-					psycastStats[keysStats[num]][2] = TextFieldNumericLabeled(ref rect4, "duration", currentList[2]);
-					if (keysStats[num] == PsycastDefOf.MorePsycasts_StabilizingTouch.defName) { stabilizing_touch_bleed_factor = TextFieldNumericLabeled(ref rect4, "bleed factor", (float)stabilizing_touch_bleed_factor); }
+					psycastStats[keysStats[num]][0] = TextFieldNumericLabeled(ref rect4, "MorePsycasts_EntropyGain".Translate(), currentList[0]);
+					psycastStats[keysStats[num]][1] = TextFieldNumericLabeled(ref rect4, "MorePsycasts_PsyFocusCost".Translate(), currentList[1]);
+					psycastStats[keysStats[num]][2] = TextFieldNumericLabeled(ref rect4, "MorePsycasts_Duration".Translate(), currentList[2]);
+					if (keysStats[num] == PsycastDefOf.MorePsycasts_StabilizingTouch.defName) { stabilizing_touch_bleed_factor = TextFieldNumericLabeled(ref rect4, "MorePsycasts_BleedFactor".Translate(), (float)stabilizing_touch_bleed_factor); }
 					if (keysStats[num] == PsycastDefOf.MorePsycasts_HealingTouch.defName)
                     {
-						healing_touch_natural_healing_factor = TextFieldNumericLabeled(ref rect4, "natural healing factor", (float)healing_touch_natural_healing_factor);
-						healing_touch_immunity_gain_speed_factor = TextFieldNumericLabeled(ref rect4, "immunity gain speed factor", (float)healing_touch_immunity_gain_speed_factor);
+						healing_touch_natural_healing_factor = TextFieldNumericLabeled(ref rect4, "MorePsycasts_NaturalHealingFactor".Translate(), (float)healing_touch_natural_healing_factor);
+						healing_touch_immunity_gain_speed_factor = TextFieldNumericLabeled(ref rect4, "MorePsycasts_ImmunityGainSpeedFactor".Translate(), (float)healing_touch_immunity_gain_speed_factor);
 					}
-					if (keysStats[num] == PsycastDefOf.MorePsycasts_HealScars.defName) { heal_scars_healing_speed = TextFieldNumericLabeled(ref rect4, "healing speed relative to base speed", (float)heal_scars_healing_speed); }
-					if (keysStats[num] == PsycastDefOf.MorePsycasts_RegrowBodyParts.defName) { regrow_body_parts_healing_speed = TextFieldNumericLabeled(ref rect4, "healing speed relative to base speed", (float)regrow_body_parts_healing_speed); }
+					if (keysStats[num] == PsycastDefOf.MorePsycasts_HealScars.defName) { heal_scars_healing_speed = TextFieldNumericLabeled(ref rect4, "MorePsycasts_HealingSpeedRelative".Translate(), (float)heal_scars_healing_speed); }
+					if (keysStats[num] == PsycastDefOf.MorePsycasts_RegrowBodyParts.defName) { regrow_body_parts_healing_speed = TextFieldNumericLabeled(ref rect4, "MorePsycasts_HealingSpeedRelative".Translate(), (float)regrow_body_parts_healing_speed); }
 					if (keysStats[num] == PsycastDefOf.MorePsycasts_FlashHeal.defName)
 					{
-						flash_heal_heal_amount = TextFieldNumericLabeled(ref rect4, "heal amount", (float)flash_heal_heal_amount);
-						flash_heal_scar_chance = TextFieldNumericLabeled(ref rect4, "scar chance", (float)flash_heal_scar_chance);
+						flash_heal_heal_amount = TextFieldNumericLabeled(ref rect4, "MorePsycasts_HealAmount".Translate(), (float)flash_heal_heal_amount);
+						flash_heal_scar_chance = TextFieldNumericLabeled(ref rect4, "MorePsycasts_ScarChance".Translate(), (float)flash_heal_scar_chance);
 					}
 					if (keysStats[num] == PsycastDefOf.MorePsycasts_RevivingTouch.defName)
                     {
-						reviving_touch_min_proportial_damage = TextFieldNumericLabeled(ref rect4, "min proportial damage", (float)reviving_touch_min_proportial_damage);
-						reviving_touch_max_proportial_damage = TextFieldNumericLabeled(ref rect4, "max proportial damage", (float)reviving_touch_max_proportial_damage);
-						psychic_ressurection_severity_per_day = TextFieldNumericLabeled(ref rect4, "severity per day lost on psychic resurrection", (float)psychic_ressurection_severity_per_day);
+						reviving_touch_min_proportial_damage = TextFieldNumericLabeled(ref rect4, "MorePsycasts_MinProportionalDamage".Translate(), (float)reviving_touch_min_proportial_damage);
+						reviving_touch_max_proportial_damage = TextFieldNumericLabeled(ref rect4, "MorePsycasts_MaxProportionalDamage".Translate(), (float)reviving_touch_max_proportial_damage);
+						psychic_ressurection_severity_per_day = TextFieldNumericLabeled(ref rect4, "MorePsycasts_SeverityPerDay".Translate(), (float)psychic_ressurection_severity_per_day);
 					}
 				}
 			}
@@ -621,7 +621,7 @@ namespace MorePsycasts
 								Thing thing2 = thing.SplitOff(count);
 								GenDrop.TryDropSpawn(thing2, foundCell, parent.pawn.Map, ThingPlaceMode.Direct, out resultingThing, playDropSound: false);
 								//thing.stackCount -= count;
-								
+
 								//if (thing.stackCount == 0)
 								//	thing.DeSpawn();
 
@@ -871,7 +871,7 @@ namespace MorePsycasts
 					}
 				}
 			}
-		}		
+		}
 	}
 	public class Utilities
     {
