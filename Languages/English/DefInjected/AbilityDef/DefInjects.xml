@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+  <MorePsycasts_StabilizingTouch.label>stabilizing touch</MorePsycasts_StabilizingTouch.label>
+  <MorePsycasts_StabilizingTouch.description>Stem the bleeding of a creature for a limited time.</MorePsycasts_StabilizingTouch.description>
+
+  <MorePsycasts_HealingTouch.label>healing touch</MorePsycasts_HealingTouch.label>
+  <MorePsycasts_HealingTouch.description>Double the natural healing process of a creature.</MorePsycasts_HealingTouch.description>
+
+  <MorePsycasts_FlashHeal.label>flash heal</MorePsycasts_FlashHeal.label>
+  <MorePsycasts_FlashHeal.description>Instantanteously heal some damage to the target creature. This quick regeneration increases the chance for wounds to scar.</MorePsycasts_FlashHeal.description>
+
+  <MorePsycasts_HealScars.label>heal scars</MorePsycasts_HealScars.label>
+  <MorePsycasts_HealScars.description>Reverberate psychic energy in the target slowly healing scars. This healing process will increase the pain perception of the target dramatically.</MorePsycasts_HealScars.description>
+
+  <MorePsycasts_RegrowBodyParts.label>regrow body parts</MorePsycasts_RegrowBodyParts.label>
+  <MorePsycasts_RegrowBodyParts.description>Reverberate psychic energy in the target slowly regrowing lost body parts. This healing process will cause the target to experience immense pain.</MorePsycasts_RegrowBodyParts.description>
+
+  <MorePsycasts_RevivingTouch.label>reviving touch</MorePsycasts_RevivingTouch.label>
+  <MorePsycasts_RevivingTouch.description>Send tremendous amounts of psychic energy into a dead pawn bringing them back to life. This process will instantly reform body parts and restart the body of the deceased. Beware, casting this psycast will release a lot of neural heat, requiring most to release their limiters. The caster will be hit by psychic breakdown.</MorePsycasts_RevivingTouch.description>
+
+
+  <MorePsycasts_Ignite.label>ignite</MorePsycasts_Ignite.label>
+  <MorePsycasts_Ignite.description>Teleport a piece of a nearby star into a location setting it on fire.</MorePsycasts_Ignite.description>
+
+  <MorePsycasts_ArcticPinhole.label>arctic pinhole</MorePsycasts_ArcticPinhole.label>
+  <MorePsycasts_ArcticPinhole.description>Generate a skipgate linked to a permanently illuminated arctic region. The gate absorbs heat in the surrounding area and provides light. The light is enough to work by, but not enough to grow plants.</MorePsycasts_ArcticPinhole.description>
+
+  <MorePsycasts_CleanSkip.label>clean skip</MorePsycasts_CleanSkip.label>
+  <MorePsycasts_CleanSkip.description>Teleports all filth in the selected area into the core of a nearby star, destroying it.</MorePsycasts_CleanSkip.description>
+
+  <MorePsycasts_HaulSkip.label>haul skip</MorePsycasts_HaulSkip.label>
+  <MorePsycasts_HaulSkip.description>Teleports all haulables in the selected area to adequate stockpiles, if they exist.</MorePsycasts_HaulSkip.description>
+
+  <MorePsycasts_Mending.label>mending</MorePsycasts_Mending.label>
+  <MorePsycasts_Mending.description>Skips broken down or used up materials into each other fusing them and repairing the item in the process. This procedure has a chance of lowering the quality of the mended item.</MorePsycasts_Mending.description>
+
+  <MorePsycasts_FertilitySkip.label>fertility skip</MorePsycasts_FertilitySkip.label>
+  <MorePsycasts_FertilitySkip.description>By using skipping to either remove or add components from soil, the soils fertility is increased. The precision of this psycast does not allow for the generation of rich soil.</MorePsycasts_FertilitySkip.description>
+
+
+  <MorePsycasts_BoostImmunity.label>boost immunity</MorePsycasts_BoostImmunity.label>
+  <MorePsycasts_BoostImmunity.description>Creates many skipgates inside of the body leading to faster cell exchanges and thus boosting immunity.</MorePsycasts_BoostImmunity.description>
+
+  <MorePsycasts_CureDisease.label>cure disease</MorePsycasts_CureDisease.label>
+  <MorePsycasts_CureDisease.description>Skips diseased cells, parasites, and other bodily intruders out of the creature, healing the disease. Depending on the ailment, there is a chance for the creature to take damage from this procedure.</MorePsycasts_CureDisease.description>
+
+  <MorePsycasts_ReverseAging.label>reverse aging</MorePsycasts_ReverseAging.label>
+  <MorePsycasts_ReverseAging.description>Multiple skipgates are created throughout the body all connected to the center of a black hole. The weird physics of the process causes time to reverse for the cells throughout the body. Lowering the targets age and perhaps removing diseases of old age.</MorePsycasts_ReverseAging.description>
+
+</LanguageData>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+  <MorePsycasts_MostChangesRequireRestart>Most changes here require a restart of the game to take effect.</MorePsycasts_MostChangesRequireRestart>
+  <MorePsycasts_PsychicallyInducedHunger>Psychically induced hunger and exhaustion</MorePsycasts_PsychicallyInducedHunger>
+  <MorePsycasts_HungerRate>hunger rate factor offset</MorePsycasts_HungerRate>
+  <MorePsycasts_RestFall>rest fall factor offset</MorePsycasts_RestFall>
+  <MorePsycasts_PainOffset>pain offset</MorePsycasts_PainOffset>
+  <MorePsycasts_EntropyGain>entropy gain</MorePsycasts_EntropyGain>
+  <MorePsycasts_PsyFocusCost>psyfocus cost</MorePsycasts_PsyFocusCost>
+  <MorePsycasts_Duration>duration</MorePsycasts_Duration>
+  <MorePsycasts_BleedFactor>bleed factor</MorePsycasts_BleedFactor>
+  <MorePsycasts_NaturalHealingFactor>natural healing factor</MorePsycasts_NaturalHealingFactor>
+  <MorePsycasts_ImmunityGainSpeedFactor>immunity gain speed factor</MorePsycasts_ImmunityGainSpeedFactor>
+  <MorePsycasts_HealingSpeedRelative>healing speed relative to base speed</MorePsycasts_HealingSpeedRelative>
+  <MorePsycasts_HealAmount>heal amount</MorePsycasts_HealAmount>
+  <MorePsycasts_ScarChance>scar chance</MorePsycasts_ScarChance>
+  <MorePsycasts_MinProportionalDamage>min proportional damage</MorePsycasts_MinProportionalDamage>
+  <MorePsycasts_MaxProportionalDamage>max proportional damage</MorePsycasts_MaxProportionalDamage>
+  <MorePsycasts_SeverityPerDay>severity per day lost on psychic resurrection</MorePsycasts_SeverityPerDay>
+  <MorePsycasts_MorePsycasts>More Psycasts</MorePsycasts_MorePsycasts>
+</LanguageData>
