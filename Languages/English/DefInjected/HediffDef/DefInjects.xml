@@ -1,33 +1,33 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
   <MorePsycasts_StabilizingTouch.label>stabilized</MorePsycasts_StabilizingTouch.label>
   <MorePsycasts_StabilizingTouch.description>This creature's bleeding is stemmed for the time being. This is achieved by getting the brain to psychically hold back its blood.</MorePsycasts_StabilizingTouch.description>
-  
+
   <MorePsycasts_AcceleratedHealing.label>psychically-accelerated healing</MorePsycasts_AcceleratedHealing.label>
   <MorePsycasts_AcceleratedHealing.description>This creature psyche is being stimulated resulting in it healing at a much faster rate than is natural.</MorePsycasts_AcceleratedHealing.description>
-  
+
   <MorePsycasts_BoostImmunity.label>psychically-boosted immunity</MorePsycasts_BoostImmunity.label>
   <MorePsycasts_BoostImmunity.description>Many skipgates are present within this creatures body speeding up physical processes and boosting immunity.</MorePsycasts_BoostImmunity.description>
-  
+
   <MorePsycasts_PsychicReverberationsScars.label>psychic reverberations</MorePsycasts_PsychicReverberationsScars.label>
   <MorePsycasts_PsychicReverberationsScars.description>This creatures mind is pulsing with psychic energies stimulating scars to heal like wounds would.</MorePsycasts_PsychicReverberationsScars.description>
-  
+
   <MorePsycasts_PsychicReverberationsBodyParts.label>rapid psychic reverberations</MorePsycasts_PsychicReverberationsBodyParts.label>
   <MorePsycasts_PsychicReverberationsBodyParts.description>This creatures mind is rapidly pulsing with psychic energies stimulating lost body parts, healing them over time and causing tremendous pain.</MorePsycasts_PsychicReverberationsBodyParts.description>
-  
+
   <MorePsycasts_ReverseAging.label>reverse aging</MorePsycasts_ReverseAging.label>
   <MorePsycasts_ReverseAging.description>Skipgates throughout this creatures body connected to the center of a block hole are reversing its cells aging.</MorePsycasts_ReverseAging.description>
-  
+
   <MorePsycasts_PsychicInducedHunger.label>psychically induced hunger and exhaustion</MorePsycasts_PsychicInducedHunger.label>
   <MorePsycasts_PsychicInducedHunger.description>This creatures is psychically healing its body using up its bodily nutrients at an increased rate. This causes slight pain. This effect can stack, beware of higher stack amounts, since a pawn might be unable to sleep and eat sufficiently.</MorePsycasts_PsychicInducedHunger.description>
-  
+
   <MorePsycasts_PartiallyGrown.label>partially grown</MorePsycasts_PartiallyGrown.label>
   <MorePsycasts_PartiallyGrown.labelNoun>an injury</MorePsycasts_PartiallyGrown.labelNoun>
   <MorePsycasts_PartiallyGrown.description>This part is partially grown and does not fulfill its function fully yet.</MorePsycasts_PartiallyGrown.description>
   <MorePsycasts_PartiallyGrown.comps.0.permanentLabel>partially grown</MorePsycasts_PartiallyGrown.comps.0.permanentLabel>
   <MorePsycasts_PartiallyGrown.injuryProps.destroyedLabel>Destroyed</MorePsycasts_PartiallyGrown.injuryProps.destroyedLabel>
-  
+
   <MorePsycasts_PsychicBurn.label>psychic burn</MorePsycasts_PsychicBurn.label>
   <MorePsycasts_PsychicBurn.labelNoun>a burn</MorePsycasts_PsychicBurn.labelNoun>
   <MorePsycasts_PsychicBurn.description>A burn.</MorePsycasts_PsychicBurn.description>
@@ -37,7 +37,7 @@
   <MorePsycasts_PsychicBurn.comps.2.permanentLabel>burn scar</MorePsycasts_PsychicBurn.comps.2.permanentLabel>
   <MorePsycasts_PsychicBurn.injuryProps.destroyedLabel>Burned off</MorePsycasts_PsychicBurn.injuryProps.destroyedLabel>
   <MorePsycasts_PsychicBurn.injuryProps.destroyedOutLabel>Burned out</MorePsycasts_PsychicBurn.injuryProps.destroyedOutLabel>
-  
+
   <MorePsycasts_PsychicRessurection.label>psychic resurrection</MorePsycasts_PsychicRessurection.label>
   <MorePsycasts_PsychicRessurection.description>This creature is in the process of resurrecting.</MorePsycasts_PsychicRessurection.description>
 
