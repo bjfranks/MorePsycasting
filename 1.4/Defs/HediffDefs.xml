@@ -129,7 +129,7 @@
     <defName>MorePsycasts_PartiallyGrown</defName>
     <label>partially grown</label>
 	<labelNoun>an injury</labelNoun>
-    <description>This part is partially grown and does not fulfill its function fully yet..</description>
+    <description>This part is partially grown and does not fulfill its function fully yet.</description>
 	<comps>
       <li Class="HediffCompProperties_GetsPermanent">
         <permanentLabel>partially grown</permanentLabel>
