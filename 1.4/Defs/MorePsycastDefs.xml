@@ -398,7 +398,7 @@
     <label>boost immunity</label>
     <description>Creates many skipgates inside of the body leading to faster cell exchanges and thus boosting immunity.</description>
     <level>3</level>
-    <iconPath>Icons/WIP</iconPath>
+    <iconPath>Icons/BoostImmune</iconPath>
     <statBases>
 	  <Ability_PsyfocusCost>0.25</Ability_PsyfocusCost>
 	  <Ability_Duration>240</Ability_Duration>
@@ -430,7 +430,7 @@
     <label>cure disease</label>
     <description>Skips diseased cells, parasites, and other bodily intruders out of the creature, healing the disease. Depending on the ailment, there is a chance for the creature to take damage from this procedure.</description>
     <level>4</level>
-    <iconPath>Icons/WIP</iconPath>
+    <iconPath>Icons/CureDisease</iconPath>
     <statBases>
 	  <Ability_PsyfocusCost>0.5</Ability_PsyfocusCost>
     </statBases>
@@ -458,7 +458,7 @@
     <label>reverse aging</label>
     <description>Multiple skipgates are created throughout the body all connected to the center of a black hole. The weird physics of the process causes time to reverse for the cells throughout the body. Lowering the targets age and perhaps removing diseases of old age.</description>
     <level>6</level>
-    <iconPath>Icons/WIP</iconPath>
+    <iconPath>Icons/AntiAging</iconPath>
     <statBases>
 	  <Ability_PsyfocusCost>0.9</Ability_PsyfocusCost>
 	  <Ability_Duration>14400</Ability_Duration>
