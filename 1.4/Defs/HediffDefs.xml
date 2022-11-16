@@ -7,6 +7,9 @@
 	<isBad>false</isBad>
 	<stages>
 	  <li>
+		<hungerRateFactorOffset>1</hungerRateFactorOffset>
+		<restFallFactorOffset>1</restFallFactorOffset>
+		<painOffset>0.05</painOffset>
 		<totalBleedFactor>0.0</totalBleedFactor>
 	  </li>
 	</stages>
@@ -50,6 +53,13 @@
 	<label>psychic reverberations</label>
 	<description>This creatures mind is pulsing with psychic energies stimulating scars to heal like wounds would.</description>
 	<isBad>false</isBad>
+	<stages>
+	  <li>
+		<hungerRateFactorOffset>2</hungerRateFactorOffset>
+		<restFallFactorOffset>2</restFallFactorOffset>
+		<painOffset>0.1</painOffset>
+	  </li>
+	</stages>
 	<comps>
       <li>
         <compClass>MorePsycasts.HediffComp_PsychicReverberationsScars</compClass>
@@ -65,7 +75,9 @@
 	<isBad>false</isBad>
 	<stages>
 	  <li>
-		<painOffset>0.35</painOffset>
+		<hungerRateFactorOffset>3</hungerRateFactorOffset>
+		<restFallFactorOffset>3</restFallFactorOffset>
+		<painOffset>0.5</painOffset>
 	  </li>
 	</stages>
 	<comps>
@@ -106,21 +118,15 @@
     </comps>
   </HediffDef>
   
-  <HediffDef>
+  <HediffDef ParentName = "PsycastHediffBase">
     <defName>MorePsycasts_PsychicInducedHunger</defName>
-    <hediffClass>MorePsycasts.HediffStacks</hediffClass>
 	<label>psychically induced hunger and exhaustion</label>
-	<description>This creatures is psychically healing its body using up its bodily nutrients at an increased rate. This causes slight pain. This effect can stack, beware of higher stack amounts, since a pawn might be unable to sleep and eat sufficiently.</description>
-	<initialSeverity>0</initialSeverity>
-    <minSeverity>0</minSeverity>
-	<tendable>False</tendable>
-	<chronic>False</chronic>
-	<everCurableByItem>False</everCurableByItem>
+	<description>This creatures is psychically healing its body using up its bodily nutrients at an increased rate. This also causes pain.</description>
 	<stages>
 	  <li>
-        <hungerRateFactorOffset>1</hungerRateFactorOffset>
-		<restFallFactorOffset>1</restFallFactorOffset>
-		<painOffset>0.05</painOffset>
+        <hungerRateFactorOffset>4</hungerRateFactorOffset>
+		<restFallFactorOffset>4</restFallFactorOffset>
+		<painOffset>0.2</painOffset>
       </li>
 	</stages>
   </HediffDef>

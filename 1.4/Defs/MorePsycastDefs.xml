@@ -34,13 +34,12 @@
       </targetParams>
     </verbProperties>
     <comps>
-	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
-        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
+	  <li Class = "CompProperties_AbilityGiveHediff">
+        <compClass>CompAbilityEffect_GiveHediff</compClass>
         <hediffDef>MorePsycasts_StabilizingTouch</hediffDef>
-		<hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
-        <onlyBrain>True</onlyBrain>
-		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <durationMultiplier>PsychicSensitivity</durationMultiplier>
         <psychic>True</psychic>
+        <applicableToMechs>False</applicableToMechs>
       </li>
 	  <li Class="CompProperties_AbilityFleckOnTarget">
         <fleckDef>PsycastPsychicEffect</fleckDef>
@@ -105,13 +104,13 @@
 		<compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_FlashHeal</compClass>
 		<sound>PsycastPsychicEffect</sound>
       </li>
-	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
-        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
-        <hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
-        <onlyBrain>True</onlyBrain>
-		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+	  <li Class = "CompProperties_AbilityGiveHediff">
+        <compClass>CompAbilityEffect_GiveHediff</compClass>
+        <hediffDef>MorePsycasts_PsychicInducedHunger</hediffDef>
+        <durationMultiplier>PsychicSensitivity</durationMultiplier>
         <psychic>True</psychic>
-		<stacks>4</stacks>
+        <applicableToMechs>False</applicableToMechs>
+		<onlyBrain>True</onlyBrain>
       </li>
 	  <li Class="CompProperties_AbilityFleckOnTarget">
         <fleckDef>PsycastPsychicEffect</fleckDef>
@@ -138,14 +137,13 @@
       </targetParams>
     </verbProperties>
     <comps>
-	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
-        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
+	  <li Class = "CompProperties_AbilityGiveHediff">
+        <compClass>CompAbilityEffect_GiveHediff</compClass>
         <hediffDef>MorePsycasts_PsychicReverberationsScars</hediffDef>
-		<hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
-        <onlyBrain>True</onlyBrain>
-		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+        <durationMultiplier>PsychicSensitivity</durationMultiplier>
         <psychic>True</psychic>
-		<stacks>2</stacks>
+        <applicableToMechs>False</applicableToMechs>
+		<onlyBrain>True</onlyBrain>
       </li>
 	  <li Class="CompProperties_AbilityFleckOnTarget">
         <fleckDef>PsycastPsychicEffect</fleckDef>
@@ -172,14 +170,13 @@
       </targetParams>
     </verbProperties>
     <comps>
-	  <li Class = "MorePsycasts.CompProperties_MorePsycasts_AbilityGiveHediffWithStacks">
-        <compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_GiveHediffWithStacks</compClass>
-		<hediffDef>MorePsycasts_PsychicReverberationsBodyParts</hediffDef>
-        <hediffDef2>MorePsycasts_PsychicInducedHunger</hediffDef2>
-        <onlyBrain>True</onlyBrain>
-		<durationMultiplier>PsychicSensitivity</durationMultiplier>
+	  <li Class = "CompProperties_AbilityGiveHediff">
+        <compClass>CompAbilityEffect_GiveHediff</compClass>
+        <hediffDef>MorePsycasts_PsychicReverberationsBodyParts</hediffDef>
+        <durationMultiplier>PsychicSensitivity</durationMultiplier>
         <psychic>True</psychic>
-		<stacks>3</stacks>
+        <applicableToMechs>False</applicableToMechs>
+		<onlyBrain>True</onlyBrain>
       </li>
 	  <li Class="CompProperties_AbilityFleckOnTarget">
         <fleckDef>PsycastPsychicEffect</fleckDef>
