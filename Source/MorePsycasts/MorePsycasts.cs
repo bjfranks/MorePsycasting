@@ -318,7 +318,7 @@ namespace MorePsycasts
 				def = (float)nullable;
         }
 	}
-	public class HediffStacks : Hediff
+	/*public class HediffStacks : Hediff
 	{
 		public List<HediffStacks> stacksList = new List<HediffStacks>();
 		public int duration = 0;
@@ -414,7 +414,7 @@ namespace MorePsycasts
 			target2.health.AddHediff(hediff2);
 		}
 
-	}
+	}*/
 	public class CompAbilityEffect_MorePsycasts_FlashHeal : CompAbilityEffect
 	{
 		public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
