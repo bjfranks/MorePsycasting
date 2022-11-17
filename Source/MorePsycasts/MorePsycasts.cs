@@ -602,7 +602,7 @@ namespace MorePsycasts
 				{
 					Thing thing = thingList[i];
 					int max = thing.stackCount;
-                    for (int j = 0; j < max; j++)
+					for (int j = 0; j < max; j++)
                         if (thing.def.EverHaulable && !thing.IsForbidden(parent.pawn) && HaulAIUtility.PawnCanAutomaticallyHaulFast(parent.pawn, thing, forced: false))
                         {
                             IntVec3 foundCell;
@@ -616,10 +616,11 @@ namespace MorePsycasts
 
 								int count = Verse.GridsUtility.GetItemStackSpaceLeftFor(foundCell, parent.pawn.Map, thing.def);
 								count = Math.Min(count, thing.stackCount);
-								ThingOwner innerContainer = parent.pawn.Map.thingGrid.ThingAt(foundCell, ThingCategory.Building).holdingOwner;
+								//ThingOwner innerContainer = parent.pawn.Map.thingGrid.ThingAt(foundCell, ThingCategory.Building).holdingOwner;
 								Thing resultingThing;
 								Thing thing2 = thing.SplitOff(count);
 								GenDrop.TryDropSpawn(thing2, foundCell, parent.pawn.Map, ThingPlaceMode.Direct, out resultingThing, playDropSound: false);
+								
 								//thing.stackCount -= count;
 
 								//if (thing.stackCount == 0)
