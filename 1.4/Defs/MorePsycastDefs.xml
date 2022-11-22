@@ -100,9 +100,19 @@
       </targetParams>
     </verbProperties>
     <comps>
-      <li Class = "CompProperties_AbilityEffect">
+      <li Class = "MorePsycasts.CompPropertiesWithParameters_AbilityEffect">
 		<compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_FlashHeal</compClass>
 		<sound>PsycastPsychicEffect</sound>
+		<parameters>
+		  <li>
+			<key>heal_amount</key>
+			<value>10</value>
+          </li>
+		  <li>
+			<key>scar_chance</key>
+			<value>1.01</value>
+          </li>
+        </parameters>
       </li>
 	  <li Class = "CompProperties_AbilityGiveHediff">
         <compClass>CompAbilityEffect_GiveHediff</compClass>
