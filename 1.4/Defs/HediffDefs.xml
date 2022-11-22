@@ -46,43 +46,58 @@
 	  </li>
 	</stages>
   </HediffDef>
-  
-  <HediffDef ParentName = "PsycastHediffBase">
+
+  <HediffDef ParentName="PsycastHediffBase">
     <defName>MorePsycasts_PsychicReverberationsScars</defName>
-	<hediffClass>HediffWithComps</hediffClass>
-	<label>psychic reverberations</label>
-	<description>This creatures mind is pulsing with psychic energies stimulating scars to heal like wounds would.</description>
-	<isBad>false</isBad>
-	<stages>
-	  <li>
-		<hungerRateFactorOffset>2</hungerRateFactorOffset>
-		<restFallFactorOffset>2</restFallFactorOffset>
-		<painOffset>0.1</painOffset>
-	  </li>
-	</stages>
-	<comps>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>psychic reverberations</label>
+    <description>This creatures mind is pulsing with psychic energies stimulating scars to heal like wounds would.
+    </description>
+    <isBad>false</isBad>
+    <stages>
       <li>
+        <hungerRateFactorOffset>2</hungerRateFactorOffset>
+        <restFallFactorOffset>2</restFallFactorOffset>
+        <painOffset>0.1</painOffset>
+      </li>
+    </stages>
+    <comps>
+      <li Class="MorePsycasts.HediffCompPropertiesWithParameters">
         <compClass>MorePsycasts.HediffComp_PsychicReverberationsScars</compClass>
+        <parameters>
+          <li>
+            <key>healing_speed</key>
+            <value>1.0</value>
+          </li>
+        </parameters>
       </li>
     </comps>
   </HediffDef>
-  
-  <HediffDef ParentName = "PsycastHediffBase">
+
+  <HediffDef ParentName="PsycastHediffBase">
     <defName>MorePsycasts_PsychicReverberationsBodyParts</defName>
-	<hediffClass>HediffWithComps</hediffClass>
-	<label>rapid psychic reverberations</label>
-	<description>This creatures mind is rapidly pulsing with psychic energies stimulating lost body parts, healing them over time and causing tremendous pain.</description>
-	<isBad>false</isBad>
-	<stages>
-	  <li>
-		<hungerRateFactorOffset>3</hungerRateFactorOffset>
-		<restFallFactorOffset>3</restFallFactorOffset>
-		<painOffset>0.5</painOffset>
-	  </li>
-	</stages>
-	<comps>
+    <hediffClass>HediffWithComps</hediffClass>
+    <label>rapid psychic reverberations</label>
+    <description>This creatures mind is rapidly pulsing with psychic energies stimulating lost body parts, healing
+      them over time and causing tremendous pain.
+    </description>
+    <isBad>false</isBad>
+    <stages>
       <li>
+        <hungerRateFactorOffset>3</hungerRateFactorOffset>
+        <restFallFactorOffset>3</restFallFactorOffset>
+        <painOffset>0.5</painOffset>
+      </li>
+    </stages>
+    <comps>
+      <li Class="MorePsycasts.HediffCompPropertiesWithParameters">
         <compClass>MorePsycasts.HediffComp_PsychicReverberationsBodyParts</compClass>
+        <parameters>
+          <li>
+            <key>healing_speed</key>
+            <value>1.0</value>
+          </li>
+        </parameters>
       </li>
     </comps>
   </HediffDef>
@@ -191,7 +206,7 @@
 	<comps>
       <li Class="HediffCompProperties_SeverityPerDay">
         <severityPerDay>-0.1</severityPerDay>
-		<showDaysToRecover>true</showDaysToRecover>
+		    <showDaysToRecover>true</showDaysToRecover>
       </li>
     </comps>
 	<stages>

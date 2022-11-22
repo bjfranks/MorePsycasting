@@ -742,21 +742,33 @@ namespace MorePsycasts
         }
     }
 
+    public class HediffCompPropertiesWithParameters : HediffCompProperties
+    {
+        public Dictionary<string, float> parameters;
+    }
+
     public class HediffComp_PsychicReverberationsScars : HediffComp
     {
+        public HediffCompPropertiesWithParameters Props => props as HediffCompPropertiesWithParameters;
+
         public override void CompPostTick(ref float severityAdjustment)
         {
             base.CompPostTick(ref severityAdjustment);
-            var hediff_Injury = Utilities.FindPermanentInjury(Pawn);
-            if (hediff_Injury == null) severityAdjustment = -1;
 
-            if (Pawn.IsHashIntervalTick(600))
-                hediff_Injury.Heal((float)MorePsycasts_Mod.settings.heal_scars_healing_speed * Utilities.getHealingAmount(Pawn));
+            var hediff_Injury = Utilities.FindPermanentInjury(Pawn);
+            if (hediff_Injury == null)
+            {
+                severityAdjustment = -1;
+                return;
+            }
+
+            if (Pawn.IsHashIntervalTick(600)) hediff_Injury.Heal(Utilities.getHealingAmount(Pawn) * Props.parameters["healing_speed"]);
         }
     }
 
     public class HediffComp_PsychicReverberationsBodyParts : HediffComp
     {
+        public HediffCompPropertiesWithParameters Props => props as HediffCompPropertiesWithParameters;
         public override void CompPostTick(ref float severityAdjustment)
         {
             base.CompPostTick(ref severityAdjustment);
@@ -767,7 +779,7 @@ namespace MorePsycasts
                 return;
             }
 
-            var healingAmount = (float)MorePsycasts_Mod.settings.regrow_body_parts_healing_speed * Utilities.getHealingAmount(Pawn);
+            var healingAmount = Props.parameters["healing_speed"] * Utilities.getHealingAmount(Pawn);
 
             if (Pawn.IsHashIntervalTick(600))
             {
