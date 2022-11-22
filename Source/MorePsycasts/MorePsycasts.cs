@@ -51,12 +51,12 @@ namespace MorePsycasts
         public float? healing_touch_natural_healing_factor;
         public float? healing_touch_immunity_gain_speed_factor;
         public float? psychic_ressurection_severity_per_day;
-        public float? flash_heal_heal_amount = 10f;
-        public float? flash_heal_scar_chance = 1.01f;
+        public float? flash_heal_heal_amount = 10f;//done
+        public float? flash_heal_scar_chance = 1.01f;//done
         public float? heal_scars_healing_speed = 1f;
         public float? regrow_body_parts_healing_speed = 1f;
-        public float? reviving_touch_min_proportial_damage = 0.2f;
-        public float? reviving_touch_max_proportial_damage = 0.8f;
+        public float? reviving_touch_min_proportial_damage = 0.2f;//not used
+        public float? reviving_touch_max_proportial_damage = 0.8f;//not used
 
         public bool reset = false;
 
@@ -437,9 +437,14 @@ namespace MorePsycasts
         }
 
     }*/
+
+    public class CompPropertiesWithParameters_AbilityEffect : CompProperties_AbilityEffect
+    {
+        public Dictionary<string, float> parameters;
+    }
     public class CompAbilityEffect_MorePsycasts_FlashHeal : CompAbilityEffect
     {
-        public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
+        public new CompPropertiesWithParameters_AbilityEffect Props => (CompPropertiesWithParameters_AbilityEffect)props;
 
         public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
         {
@@ -447,7 +452,7 @@ namespace MorePsycasts
             base.Apply(target, dest);
 
             if (target.Pawn == null) return;
-            for (var i = 0; i < 10 * MorePsycasts_Mod.settings.flash_heal_heal_amount; i++)
+            for (var i = 0; i < 10 * Props.parameters["heal_amount"]; i++)
             {
                 var hediff_Injury = FindInjury(target.Pawn);
                 if (hediff_Injury != null)
@@ -455,7 +460,7 @@ namespace MorePsycasts
                     var hediffWithComps = hediff_Injury as HediffWithComps;
                     var getsPermanent = hediffWithComps.TryGetComp<HediffComp_GetsPermanent>();
                     hediff_Injury.Heal(0.1f);
-                    getsPermanent.Props.becomePermanentChanceFactor *= (float)MorePsycasts_Mod.settings.flash_heal_scar_chance;
+                    getsPermanent.Props.becomePermanentChanceFactor *= Props.parameters["scar_chance"];
                 }
             }
             //SoundDefOf.PsycastPsychicEffect.PlayOneShot(new TargetInfo(target.Cell, parent.pawn.Map));
@@ -480,7 +485,7 @@ namespace MorePsycasts
 
     public class CompAbilityEffect_MorePsycasts_RevivingTouch : CompAbilityEffect
     {
-        public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
+        public new CompPropertiesWithParameters_AbilityEffect Props => (CompPropertiesWithParameters_AbilityEffect)props;
 
         public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
         {
