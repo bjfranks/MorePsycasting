@@ -214,10 +214,18 @@ namespace MorePsycasts
 			var psycasts = DefDatabase<AbilityDef>.AllDefsListForReading;
 			foreach (var psycast in psycasts)
 			{
-				if (settings.psycastStates == null) settings.psycastStates = new Dictionary<string, bool>();
-				if (!settings.psycastStates.ContainsKey(psycast.defName))
+				if (typeof(Psycast).IsAssignableFrom(psycast.abilityClass))
 				{
-					settings.psycastStates[psycast.defName] = true;
+					if (settings.psycastStates == null) settings.psycastStates = new Dictionary<string, bool>();
+					if (!settings.psycastStates.ContainsKey(psycast.defName))
+					{
+						settings.psycastStates[psycast.defName] = true;
+					}
+				}
+				else
+                {
+					if (settings.psycastStates.ContainsKey(psycast.defName))
+						settings.psycastStates.Remove(psycast.defName);
 				}
 			}
 			var morePsycasts_psycasts = typeof(PsycastDefOf).GetFields();
