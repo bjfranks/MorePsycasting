@@ -60,12 +60,57 @@ namespace MorePsycasts
 
         public bool reset = false;
 
+        private void ScribeValueIfNotNull(AbilityDef psycast, StatDef statDef)
+        {
+            foreach (StatModifier statModifier in psycast.statBases)
+                if (statModifier.stat == statDef)
+                { 
+                    Scribe_Values.Look(ref statModifier.value, "MorePsycasts_" + psycast.defName + "_" + statDef.defName);
+                    return;
+                }      
+        }
+
         public override void ExposeData()
         {
             base.ExposeData();
             Scribe_Values.Look(ref reset, "MorePsycasts_reset");
             if (reset && Scribe.mode != LoadSaveMode.Saving) return;
             Scribe_Collections.Look(ref psycastStates, "MorePsycasts_psycastStates", LookMode.Value, LookMode.Value, ref psycastKeys, ref boolValues);
+            foreach(AbilityDef psycast in Utilities.AllPsycastDefs())
+            {
+                ScribeValueIfNotNull(psycast, StatDefOf.Ability_EntropyGain);//potential squared runtime
+                ScribeValueIfNotNull(psycast, StatDefOf.Ability_PsyfocusCost);
+                ScribeValueIfNotNull(psycast, StatDefOf.Ability_Duration);
+
+                foreach (CompPropertiesWithParameters_AbilityEffect prop in psycast.TryGetCompProperties<CompPropertiesWithParameters_AbilityEffect>())
+                {
+                    foreach (string parameterName in prop.parameters.Keys)
+                    {
+                        float val = prop.parameters[parameterName];
+                        Scribe_Values.Look(ref val, "MorePsycasts_" + psycast.defName + "_" + parameterName);
+                        prop.parameters[parameterName] = val;
+                    }
+                }
+                foreach (CompProperties_AbilityGiveHediff prop2 in psycast.TryGetCompProperties<CompProperties_AbilityGiveHediff>())
+                {
+                    /*HediffStage standard = new HediffStage();
+                    foreach (HediffStage hS in prop2.hediffDef.stages)
+                    {
+                        if (hS.painOffset != standard.painOffset)
+                            Scribe_Values.Look(ref hS.painOffset, "MorePsycasts_" + psycast.defName + "_" + prop2.hediffDef.defName + "_" + parameterName); 
+                    }*/ //This is difficult
+                    foreach (HediffCompPropertiesWithParameters prop in prop2.hediffDef.TryGetCompProperties<HediffCompPropertiesWithParameters>())
+                    {
+                        foreach (string parameterName in prop.parameters.Keys)
+                        {
+                            float val = prop.parameters[parameterName];
+                            Scribe_Values.Look(ref val, "MorePsycasts_" + psycast.defName +"_"+prop2.hediffDef.defName+ "_" + parameterName);
+                            prop.parameters[parameterName] = val;
+                        }
+                    }
+                }
+            }
+
             var defNames = psycastStats.Keys.ToList();
             Scribe_Collections.Look(ref defNames, "MorePsycasts_defNames", LookMode.Value);
             var entropies = psycastStats.Select(d => d.Value[0]).ToList();
@@ -126,6 +171,17 @@ namespace MorePsycasts
             var rect4 = new Rect(0f, 0f, rect3.width - 20f, (keysStats.Count * 4 + 14) * 32 + 1);
             Widgets.BeginScrollView(rect3.AtZero(), ref scrollPosition1, rect4);
             Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
+            foreach (AbilityDef psycast in Utilities.AllPsycastDefs())
+            {
+                StatModifier sM = null;
+                foreach (StatModifier statModifier in psycast.statBases)
+                    if (statModifier.stat == StatDefOf.Ability_EntropyGain)//Maybe?
+                        sM = statModifier;
+                sM.value=TextFieldNumericLabeled(ref rect4, "MorePsycasts_"+psycast.defName, (float)sM.value);
+                break;//for testing purposes
+            }
+
+            /*
             Widgets.Label(getDrawRect(ref rect4), "MorePsycasts_PsychicallyInducedHunger".Translate());
             debuff_hunger = TextFieldNumericLabeled(ref rect4, "MorePsycasts_HungerRate".Translate(), (float)debuff_hunger);
             debuff_rest = TextFieldNumericLabeled(ref rect4, "MorePsycasts_RestFall".Translate(), (float)debuff_rest);
@@ -165,7 +221,7 @@ namespace MorePsycasts
                         psychic_ressurection_severity_per_day = TextFieldNumericLabeled(ref rect4, "MorePsycasts_SeverityPerDay".Translate(), (float)psychic_ressurection_severity_per_day);
                     }
                 }
-            }
+            }*/
 
             Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
             Widgets.EndScrollView();
@@ -216,6 +272,7 @@ namespace MorePsycasts
 
         public MorePsycasts_Mod(ModContentPack content) : base(content)
         {
+            Log.Message(content.SteamAppId.ToString());
             settings = GetSettings<MorePsycasts_Settings>();
         }
 
@@ -905,7 +962,7 @@ namespace MorePsycasts
         }
     }
 
-    public class Utilities
+    public static class Utilities
     {
         public static Hediff FindHealablePart(Pawn pawn)
         {
@@ -1037,6 +1094,46 @@ namespace MorePsycasts
             Effecter effecter = null;
             effecter = !target.HasThing ? def.Spawn(target.Cell, map, 1f) : def.Spawn(target.Thing, map, 1f);
             parent.AddEffecterToMaintain(effecter, target.Cell, maintainForTicks);
+        }
+
+        public static IEnumerable<AbilityDef> AllPsycastDefs()
+        {
+            var psycasts = DefDatabase<AbilityDef>.AllDefsListForReading;
+            foreach (var psycast in psycasts)
+                if (typeof(Psycast).IsAssignableFrom(psycast.abilityClass) && (psycast.modContentPack != null || psycast.modContentPack.SteamAppId == -1))
+                    yield return psycast;
+        }
+
+        public static IEnumerable<T> TryGetCompProperties<T>(this AbilityDef abilityDef) where T : AbilityCompProperties
+        {
+            if (abilityDef.comps == null)
+            {
+                yield break;
+            }
+            for (int i = 0; i < abilityDef.comps.Count; i++)
+            {
+                T val = abilityDef.comps[i] as T;
+                if (val != null)
+                {
+                    yield return val;
+                }
+            }
+        }
+
+        public static IEnumerable<T> TryGetCompProperties<T>(this HediffDef hediffDef) where T : HediffCompProperties
+        {
+            if (hediffDef.comps == null)
+            {
+                yield break;
+            }
+            for (int i = 0; i < hediffDef.comps.Count; i++)
+            {
+                T val = hediffDef.comps[i] as T;
+                if (val != null)
+                {
+                    yield return val;
+                }
+            }
         }
     }
 }
