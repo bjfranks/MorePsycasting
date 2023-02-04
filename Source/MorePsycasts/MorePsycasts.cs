@@ -51,14 +51,31 @@ namespace MorePsycasts
         public float? healing_touch_natural_healing_factor;
         public float? healing_touch_immunity_gain_speed_factor;
         public float? psychic_ressurection_severity_per_day;
-        public float? flash_heal_heal_amount = 10f;
-        public float? flash_heal_scar_chance = 1.01f;
+        public float? flash_heal_heal_amount = 10f;//done
+        public float? flash_heal_scar_chance = 1.01f;//done
         public float? heal_scars_healing_speed = 1f;
         public float? regrow_body_parts_healing_speed = 1f;
-        public float? reviving_touch_min_proportial_damage = 0.2f;
-        public float? reviving_touch_max_proportial_damage = 0.8f;
+        public float? reviving_touch_min_proportial_damage = 0.2f;//not used
+        public float? reviving_touch_max_proportial_damage = 0.8f;//not used
 
         public bool reset = false;
+
+        private void ScribeValueIfNotNull(AbilityDef psycast, StatDef statDef)
+        {
+            foreach (StatModifier statModifier in psycast.statBases)
+                if (statModifier.stat == statDef)
+                { 
+                    Scribe_Values.Look(ref statModifier.value, "MorePsycasts_" + psycast.defName + "_" + statDef.defName);
+                    return;
+                }      
+        }
+
+        private static string ScribeLabelGen(params string[] names)
+        {
+            List<string> parts = new List<string>(names);
+            parts.Insert(0, "MorePsycasts");
+            return string.Join("_", parts);
+        }
 
         public override void ExposeData()
         {
@@ -66,7 +83,75 @@ namespace MorePsycasts
             Scribe_Values.Look(ref reset, "MorePsycasts_reset");
             if (reset && Scribe.mode != LoadSaveMode.Saving) return;
             Scribe_Collections.Look(ref psycastStates, "MorePsycasts_psycastStates", LookMode.Value, LookMode.Value, ref psycastKeys, ref boolValues);
-            var defNames = psycastStats.Keys.ToList();
+
+            foreach(AbilityDef psycast in Utilities.AllPsycastDefs())
+            {
+                ScribeValueIfNotNull(psycast, StatDefOf.Ability_EntropyGain);//potential squared runtime
+                ScribeValueIfNotNull(psycast, StatDefOf.Ability_PsyfocusCost);
+                ScribeValueIfNotNull(psycast, StatDefOf.Ability_Duration);
+
+                IEnumerable<CompPropertiesWithParameters_AbilityEffect> properties = psycast.TryGetCompProperties<CompPropertiesWithParameters_AbilityEffect>();
+                if (properties != null)
+                    foreach (CompPropertiesWithParameters_AbilityEffect prop in properties)
+                    {
+                        foreach (string parameterName in prop.parameters.Keys.ToList())
+                        {
+                            float val = prop.parameters[parameterName];
+                            Scribe_Values.Look(ref val, ScribeLabelGen(psycast.defName, parameterName));
+                            prop.parameters[parameterName] = val;
+                        }
+                    }
+
+                IEnumerable<CompProperties_AbilityGiveHediff> properties2 = psycast.TryGetCompProperties<CompProperties_AbilityGiveHediff>();
+                if (properties2 != null)
+                    foreach (CompProperties_AbilityGiveHediff prop2 in properties2)
+                    {
+                        if (prop2.hediffDef.stages!=null)
+                            foreach (HediffStage hS in prop2.hediffDef.stages)
+                            {
+                                Scribe_Values.Look(ref hS.hungerRateFactorOffset, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "hungerRateFactorOffset"));
+                                Scribe_Values.Look(ref hS.restFallFactorOffset, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "restFallFactorOffset"));
+                                Scribe_Values.Look(ref hS.painOffset, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "painOffset"));
+                                Scribe_Values.Look(ref hS.totalBleedFactor, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "totalBleedFactor"));
+                                Scribe_Values.Look(ref hS.naturalHealingFactor, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "naturalHealingFactor"));
+                                Scribe_Values.Look(ref hS.vomitMtbDays, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "vomitMtbDays"));
+                                Scribe_Values.Look(ref hS.minSeverity, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "minSeverity"));
+
+                                if (hS.statFactors != null)
+                                {
+                                    foreach (StatModifier SM in hS.statFactors)
+                                    {
+                                        Scribe_Values.Look(ref SM.value, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "statFactors", SM.stat.defName));
+                                    }
+                                }
+
+                                if (hS.capMods != null)
+                                {
+                                    foreach (PawnCapacityModifier PCM in hS.capMods)
+                                    {
+                                        Scribe_Values.Look(ref PCM.offset, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "capMods", PCM.capacity.defName, "offset"));
+                                        Scribe_Values.Look(ref PCM.setMax, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "capMods", PCM.capacity.defName, "setMax"));
+                                    }
+                                }
+                            }
+                        IEnumerable<HediffCompPropertiesWithParameters> properties3 = prop2.hediffDef.TryGetCompProperties<HediffCompPropertiesWithParameters>();
+                        if (properties3 != null)
+                        {
+                            foreach (HediffCompPropertiesWithParameters prop in properties3)
+                            {
+                                foreach (string parameterName in prop.parameters.Keys.ToList())
+                                {
+                                    float val = prop.parameters[parameterName];
+                                    Scribe_Values.Look(ref val, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, parameterName));
+                                    prop.parameters[parameterName] = val;
+                                }
+                            }
+                        }
+                    }
+
+            }
+
+            /*var defNames = psycastStats.Keys.ToList();
             Scribe_Collections.Look(ref defNames, "MorePsycasts_defNames", LookMode.Value);
             var entropies = psycastStats.Select(d => d.Value[0]).ToList();
             Scribe_Collections.Look(ref entropies, "MorePsycasts_entropies", LookMode.Value);
@@ -103,7 +188,7 @@ namespace MorePsycasts
             Scribe_Values.Look(ref reviving_touch_max_proportial_damage, "MorePsycasts_reviving_touch_max_proportial_damage");
             if (reviving_touch_max_proportial_damage is null) reviving_touch_max_proportial_damage = 0.8f;
             Scribe_Values.Look(ref psychic_ressurection_severity_per_day, "MorePsycasts_psychic_ressurection_severity_per_day");
-            if (psychic_ressurection_severity_per_day is null) psychic_ressurection_severity_per_day = 0.1f;
+            if (psychic_ressurection_severity_per_day is null) psychic_ressurection_severity_per_day = 0.1f;*/
         }
 
         private List<string> psycastKeys;
@@ -123,9 +208,84 @@ namespace MorePsycasts
 
             var rect3 = rect2.LeftHalf();
             GUI.BeginGroup(rect3, new GUIStyle(GUI.skin.box));
-            var rect4 = new Rect(0f, 0f, rect3.width - 20f, (keysStats.Count * 4 + 14) * 32 + 1);
+            var rect4 = new Rect(0f, 0f, rect3.width - 20f, 15000);
             Widgets.BeginScrollView(rect3.AtZero(), ref scrollPosition1, rect4);
             Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
+            foreach (AbilityDef psycast in Utilities.AllPsycastDefs())
+            {
+                Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
+                Widgets.Label(getDrawRect(ref rect4), psycast.defName.Replace('_', ' '));
+                foreach (StatModifier statModifier in psycast.statBases)
+                {
+                    if (statModifier.stat == StatDefOf.Ability_EntropyGain)
+                        statModifier.value = TextFieldNumericLabeled(ref rect4, "EntropyGain", (float)statModifier.value);
+                    if (statModifier.stat == StatDefOf.Ability_PsyfocusCost)
+                        statModifier.value = TextFieldNumericLabeled(ref rect4, "PsyfocusCost", (float)statModifier.value);
+                    if (statModifier.stat == StatDefOf.Ability_Duration)
+                        statModifier.value = TextFieldNumericLabeled(ref rect4, "Duration", (float)statModifier.value);
+                }
+                foreach (CompPropertiesWithParameters_AbilityEffect prop in psycast.TryGetCompProperties<CompPropertiesWithParameters_AbilityEffect>())
+                {
+                    Widgets.Label(getDrawRect(ref rect4), " ╰ MorePsycast Parameters");
+                    foreach (string parameterName in prop.parameters.Keys.ToList())
+                    {
+                        prop.parameters[parameterName] = TextFieldNumericLabeled(ref rect4, parameterName, (float)prop.parameters[parameterName]);
+                    }
+                }
+
+                IEnumerable<CompProperties_AbilityGiveHediff> properties2 = psycast.TryGetCompProperties<CompProperties_AbilityGiveHediff>();
+                if (properties2 != null)
+                    foreach (CompProperties_AbilityGiveHediff prop2 in properties2)
+                    {
+                        IEnumerable<HediffCompPropertiesWithParameters> properties3 = prop2.hediffDef.TryGetCompProperties<HediffCompPropertiesWithParameters>();
+                        if (prop2.hediffDef.stages != null || (properties3 != null && properties3.Count() > 0))
+                            Widgets.Label(getDrawRect(ref rect4), " ╰ " + prop2.hediffDef.defName.Replace('_', ' '));
+
+                        if (prop2.hediffDef.stages != null)
+                            foreach (HediffStage hS in prop2.hediffDef.stages)
+                            {
+                                hS.hungerRateFactorOffset = TextFieldNumericLabeled(ref rect4, "Hunger Rate Factor Offset", (float)hS.hungerRateFactorOffset);
+                                hS.restFallFactorOffset = TextFieldNumericLabeled(ref rect4, "Rest Fall Factor Offset", (float)hS.restFallFactorOffset);
+                                hS.painOffset = TextFieldNumericLabeled(ref rect4, "Pain Offset", (float)hS.painOffset);
+                                hS.totalBleedFactor = TextFieldNumericLabeled(ref rect4, "Total Bleed Factor", (float)hS.totalBleedFactor);
+                                hS.naturalHealingFactor = TextFieldNumericLabeled(ref rect4, "Natural Healing Factor", (float)hS.naturalHealingFactor);
+                                hS.vomitMtbDays = TextFieldNumericLabeled(ref rect4, "Vomit Mtb Days", (float)hS.vomitMtbDays);
+                                hS.minSeverity = TextFieldNumericLabeled(ref rect4, "Min Severity", (float)hS.minSeverity);
+
+                                if (hS.statFactors != null)
+                                {
+                                    foreach (StatModifier SM in hS.statFactors)
+                                    {
+                                        SM.value = TextFieldNumericLabeled(ref rect4, SM.stat.defName, (float)SM.value);
+                                    }
+                                }
+
+                                if (hS.capMods != null)
+                                {
+                                    foreach (PawnCapacityModifier PCM in hS.capMods)
+                                    {
+                                        PCM.offset = TextFieldNumericLabeled(ref rect4, PCM.capacity.defName + " offset", (float)PCM.offset);
+                                        PCM.setMax = TextFieldNumericLabeled(ref rect4, PCM.capacity.defName + " setMax", (float)PCM.setMax);
+                                    }
+                                }
+                            }
+                        
+                        
+                        if (properties3 != null && properties3.Count()>0)
+                        {
+                            Widgets.Label(getDrawRect(ref rect4), "   ╰ More Psycasts Hediff Parameters");
+                            foreach (HediffCompPropertiesWithParameters prop in properties3)
+                            {
+                                foreach (string parameterName in prop.parameters.Keys.ToList())
+                                {
+                                    prop.parameters[parameterName] = TextFieldNumericLabeled(ref rect4, parameterName, (float)prop.parameters[parameterName]);
+                                }
+                            }
+                        }
+                    }
+            }
+
+            /*
             Widgets.Label(getDrawRect(ref rect4), "MorePsycasts_PsychicallyInducedHunger".Translate());
             debuff_hunger = TextFieldNumericLabeled(ref rect4, "MorePsycasts_HungerRate".Translate(), (float)debuff_hunger);
             debuff_rest = TextFieldNumericLabeled(ref rect4, "MorePsycasts_RestFall".Translate(), (float)debuff_rest);
@@ -165,7 +325,7 @@ namespace MorePsycasts
                         psychic_ressurection_severity_per_day = TextFieldNumericLabeled(ref rect4, "MorePsycasts_SeverityPerDay".Translate(), (float)psychic_ressurection_severity_per_day);
                     }
                 }
-            }
+            }*/
 
             Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
             Widgets.EndScrollView();
@@ -216,6 +376,7 @@ namespace MorePsycasts
 
         public MorePsycasts_Mod(ModContentPack content) : base(content)
         {
+            Log.Message(content.SteamAppId.ToString());
             settings = GetSettings<MorePsycasts_Settings>();
         }
 
@@ -437,9 +598,14 @@ namespace MorePsycasts
         }
 
     }*/
+
+    public class CompPropertiesWithParameters_AbilityEffect : CompProperties_AbilityEffect
+    {
+        public Dictionary<string, float> parameters;
+    }
     public class CompAbilityEffect_MorePsycasts_FlashHeal : CompAbilityEffect
     {
-        public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
+        public new CompPropertiesWithParameters_AbilityEffect Props => (CompPropertiesWithParameters_AbilityEffect)props;
 
         public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
         {
@@ -447,7 +613,7 @@ namespace MorePsycasts
             base.Apply(target, dest);
 
             if (target.Pawn == null) return;
-            for (var i = 0; i < 10 * MorePsycasts_Mod.settings.flash_heal_heal_amount; i++)
+            for (var i = 0; i < 10 * Props.parameters["heal_amount"]; i++)
             {
                 var hediff_Injury = FindInjury(target.Pawn);
                 if (hediff_Injury != null)
@@ -455,7 +621,7 @@ namespace MorePsycasts
                     var hediffWithComps = hediff_Injury as HediffWithComps;
                     var getsPermanent = hediffWithComps.TryGetComp<HediffComp_GetsPermanent>();
                     hediff_Injury.Heal(0.1f);
-                    getsPermanent.Props.becomePermanentChanceFactor *= (float)MorePsycasts_Mod.settings.flash_heal_scar_chance;
+                    getsPermanent.Props.becomePermanentChanceFactor *= Props.parameters["scar_chance"];
                 }
             }
             //SoundDefOf.PsycastPsychicEffect.PlayOneShot(new TargetInfo(target.Cell, parent.pawn.Map));
@@ -480,7 +646,7 @@ namespace MorePsycasts
 
     public class CompAbilityEffect_MorePsycasts_RevivingTouch : CompAbilityEffect
     {
-        public new CompProperties_AbilityEffect Props => (CompProperties_AbilityEffect)props;
+        public new CompPropertiesWithParameters_AbilityEffect Props => (CompPropertiesWithParameters_AbilityEffect)props;
 
         public override void Apply(LocalTargetInfo target, LocalTargetInfo dest)
         {
@@ -742,21 +908,33 @@ namespace MorePsycasts
         }
     }
 
+    public class HediffCompPropertiesWithParameters : HediffCompProperties
+    {
+        public Dictionary<string, float> parameters;
+    }
+
     public class HediffComp_PsychicReverberationsScars : HediffComp
     {
+        public HediffCompPropertiesWithParameters Props => props as HediffCompPropertiesWithParameters;
+
         public override void CompPostTick(ref float severityAdjustment)
         {
             base.CompPostTick(ref severityAdjustment);
-            var hediff_Injury = Utilities.FindPermanentInjury(Pawn);
-            if (hediff_Injury == null) severityAdjustment = -1;
 
-            if (Pawn.IsHashIntervalTick(600))
-                hediff_Injury.Heal((float)MorePsycasts_Mod.settings.heal_scars_healing_speed * Utilities.getHealingAmount(Pawn));
+            var hediff_Injury = Utilities.FindPermanentInjury(Pawn);
+            if (hediff_Injury == null)
+            {
+                severityAdjustment = -1;
+                return;
+            }
+
+            if (Pawn.IsHashIntervalTick(600)) hediff_Injury.Heal(Utilities.getHealingAmount(Pawn) * Props.parameters["healing_speed"]);
         }
     }
 
     public class HediffComp_PsychicReverberationsBodyParts : HediffComp
     {
+        public HediffCompPropertiesWithParameters Props => props as HediffCompPropertiesWithParameters;
         public override void CompPostTick(ref float severityAdjustment)
         {
             base.CompPostTick(ref severityAdjustment);
@@ -767,7 +945,7 @@ namespace MorePsycasts
                 return;
             }
 
-            var healingAmount = (float)MorePsycasts_Mod.settings.regrow_body_parts_healing_speed * Utilities.getHealingAmount(Pawn);
+            var healingAmount = Props.parameters["healing_speed"] * Utilities.getHealingAmount(Pawn);
 
             if (Pawn.IsHashIntervalTick(600))
             {
@@ -888,7 +1066,7 @@ namespace MorePsycasts
         }
     }
 
-    public class Utilities
+    public static class Utilities
     {
         public static Hediff FindHealablePart(Pawn pawn)
         {
@@ -1020,6 +1198,50 @@ namespace MorePsycasts
             Effecter effecter = null;
             effecter = !target.HasThing ? def.Spawn(target.Cell, map, 1f) : def.Spawn(target.Thing, map, 1f);
             parent.AddEffecterToMaintain(effecter, target.Cell, maintainForTicks);
+        }
+
+        public static IEnumerable<AbilityDef> AllPsycastDefs()
+        {
+            var psycasts = DefDatabase<AbilityDef>.AllDefsListForReading;
+            foreach (var psycast in psycasts)
+            {
+                if (typeof(Psycast).IsAssignableFrom(psycast.abilityClass))// && (psycast.modContentPack == null))//|| psycast.modContentPack.SteamAppId == -1
+                    yield return psycast;
+            }
+        }
+
+        public static IEnumerable<T> TryGetCompProperties<T>(this AbilityDef abilityDef) where T : AbilityCompProperties
+        {
+            if (abilityDef.comps == null)
+            {
+                yield break;
+            }
+            for (int i = 0; i < abilityDef.comps.Count; i++)
+            {
+                T val = abilityDef.comps[i] as T;
+                if (val != null)
+                {
+                    yield return val;
+                }
+            }
+            yield break;
+        }
+
+        public static IEnumerable<T> TryGetCompProperties<T>(this HediffDef hediffDef) where T : HediffCompProperties
+        {
+            if (hediffDef.comps == null)
+            {
+                yield break;
+            }
+            for (int i = 0; i < hediffDef.comps.Count; i++)
+            {
+                T val = hediffDef.comps[i] as T;
+                if (val != null)
+                {
+                    yield return val;
+                }
+            }
+            yield break;
         }
     }
 }

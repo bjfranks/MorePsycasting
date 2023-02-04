@@ -21,7 +21,7 @@
     <level>1</level>
     <iconPath>Icons/stabilize</iconPath>
     <statBases>
-      <Ability_EntropyGain>8</Ability_EntropyGain>
+    <Ability_EntropyGain>8</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.01</Ability_PsyfocusCost>
 	  <Ability_Duration>40</Ability_Duration>
     </statBases>
@@ -100,9 +100,19 @@
       </targetParams>
     </verbProperties>
     <comps>
-      <li Class = "CompProperties_AbilityEffect">
+      <li Class = "MorePsycasts.CompPropertiesWithParameters_AbilityEffect">
 		<compClass>MorePsycasts.CompAbilityEffect_MorePsycasts_FlashHeal</compClass>
 		<sound>PsycastPsychicEffect</sound>
+		<parameters>
+		  <li>
+			<key>heal_amount</key>
+			<value>10</value>
+          </li>
+		  <li>
+			<key>scar_chance</key>
+			<value>1.01</value>
+          </li>
+        </parameters>
       </li>
 	  <li Class = "CompProperties_AbilityGiveHediff">
         <compClass>CompAbilityEffect_GiveHediff</compClass>
