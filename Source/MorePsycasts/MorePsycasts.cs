@@ -129,8 +129,8 @@ namespace MorePsycasts
                                 {
                                     foreach (PawnCapacityModifier PCM in hS.capMods)
                                     {
-                                        if (PCM.capacity is null) Log.Message("PCM.capacity");
-                                        Scribe_Values.Look(ref PCM.offset, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "capMods", PCM.capacity.defName));
+                                        Scribe_Values.Look(ref PCM.offset, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "capMods", PCM.capacity.defName, "offset"));
+                                        Scribe_Values.Look(ref PCM.setMax, ScribeLabelGen(psycast.defName, prop2.hediffDef.defName, "capMods", PCM.capacity.defName, "setMax"));
                                     }
                                 }
                             }
@@ -208,7 +208,7 @@ namespace MorePsycasts
 
             var rect3 = rect2.LeftHalf();
             GUI.BeginGroup(rect3, new GUIStyle(GUI.skin.box));
-            var rect4 = new Rect(0f, 0f, rect3.width - 20f, 10000);
+            var rect4 = new Rect(0f, 0f, rect3.width - 20f, 15000);
             Widgets.BeginScrollView(rect3.AtZero(), ref scrollPosition1, rect4);
             Widgets.DrawLineHorizontal(0f, rect4.y * 32f, rect4.width);
             foreach (AbilityDef psycast in Utilities.AllPsycastDefs())
@@ -226,17 +226,63 @@ namespace MorePsycasts
                 }
                 foreach (CompPropertiesWithParameters_AbilityEffect prop in psycast.TryGetCompProperties<CompPropertiesWithParameters_AbilityEffect>())
                 {
-                    Widgets.Label(getDrawRect(ref rect4), "MorePsycast Parameters");
+                    Widgets.Label(getDrawRect(ref rect4), " ╰ MorePsycast Parameters");
                     foreach (string parameterName in prop.parameters.Keys.ToList())
                     {
                         prop.parameters[parameterName] = TextFieldNumericLabeled(ref rect4, parameterName, (float)prop.parameters[parameterName]);
                     }
                 }
 
-                foreach (CompProperties_AbilityGiveHediff prop2 in psycast.TryGetCompProperties<CompProperties_AbilityGiveHediff>())
-                {
-                    Widgets.Label(getDrawRect(ref rect4), prop2.hediffDef.defName);
-                }
+                IEnumerable<CompProperties_AbilityGiveHediff> properties2 = psycast.TryGetCompProperties<CompProperties_AbilityGiveHediff>();
+                if (properties2 != null)
+                    foreach (CompProperties_AbilityGiveHediff prop2 in properties2)
+                    {
+                        IEnumerable<HediffCompPropertiesWithParameters> properties3 = prop2.hediffDef.TryGetCompProperties<HediffCompPropertiesWithParameters>();
+                        if (prop2.hediffDef.stages != null || (properties3 != null && properties3.Count() > 0))
+                            Widgets.Label(getDrawRect(ref rect4), " ╰ " + prop2.hediffDef.defName.Replace('_', ' '));
+
+                        if (prop2.hediffDef.stages != null)
+                            foreach (HediffStage hS in prop2.hediffDef.stages)
+                            {
+                                hS.hungerRateFactorOffset = TextFieldNumericLabeled(ref rect4, "Hunger Rate Factor Offset", (float)hS.hungerRateFactorOffset);
+                                hS.restFallFactorOffset = TextFieldNumericLabeled(ref rect4, "Rest Fall Factor Offset", (float)hS.restFallFactorOffset);
+                                hS.painOffset = TextFieldNumericLabeled(ref rect4, "Pain Offset", (float)hS.painOffset);
+                                hS.totalBleedFactor = TextFieldNumericLabeled(ref rect4, "Total Bleed Factor", (float)hS.totalBleedFactor);
+                                hS.naturalHealingFactor = TextFieldNumericLabeled(ref rect4, "Natural Healing Factor", (float)hS.naturalHealingFactor);
+                                hS.vomitMtbDays = TextFieldNumericLabeled(ref rect4, "Vomit Mtb Days", (float)hS.vomitMtbDays);
+                                hS.minSeverity = TextFieldNumericLabeled(ref rect4, "Min Severity", (float)hS.minSeverity);
+
+                                if (hS.statFactors != null)
+                                {
+                                    foreach (StatModifier SM in hS.statFactors)
+                                    {
+                                        SM.value = TextFieldNumericLabeled(ref rect4, SM.stat.defName, (float)SM.value);
+                                    }
+                                }
+
+                                if (hS.capMods != null)
+                                {
+                                    foreach (PawnCapacityModifier PCM in hS.capMods)
+                                    {
+                                        PCM.offset = TextFieldNumericLabeled(ref rect4, PCM.capacity.defName + " offset", (float)PCM.offset);
+                                        PCM.setMax = TextFieldNumericLabeled(ref rect4, PCM.capacity.defName + " setMax", (float)PCM.setMax);
+                                    }
+                                }
+                            }
+                        
+                        
+                        if (properties3 != null && properties3.Count()>0)
+                        {
+                            Widgets.Label(getDrawRect(ref rect4), "   ╰ More Psycasts Hediff Parameters");
+                            foreach (HediffCompPropertiesWithParameters prop in properties3)
+                            {
+                                foreach (string parameterName in prop.parameters.Keys.ToList())
+                                {
+                                    prop.parameters[parameterName] = TextFieldNumericLabeled(ref rect4, parameterName, (float)prop.parameters[parameterName]);
+                                }
+                            }
+                        }
+                    }
             }
 
             /*
