@@ -21,7 +21,7 @@
     <level>1</level>
     <iconPath>Icons/stabilize</iconPath>
     <statBases>
-      <Ability_EntropyGain>8</Ability_EntropyGain>
+    <Ability_EntropyGain>8</Ability_EntropyGain>
 	  <Ability_PsyfocusCost>0.01</Ability_PsyfocusCost>
 	  <Ability_Duration>40</Ability_Duration>
     </statBases>
